@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Applications - Digital Seva Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/panel.css">
+</head>
+<body data-page="applications">
+
+  <!-- Top Tricolor Indian Flag Accent -->
+  <div class="tricolor-strip"></div>
+
+  <!-- Authenticated Header -->
+  <header class="panel-header">
+    <div class="panel-header-left">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" title="Toggle Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="panel.html" class="brand-badge-link" title="CSC Digital Seva Portal">
+        <svg class="brand-logo-glow" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="46" fill="#04203d" stroke="#f97316" stroke-width="3"/>
+          <path d="M50 20 L75 35 L75 65 L50 80 L25 65 L25 35 Z" fill="#f37021"/>
+          <circle cx="50" cy="50" r="16" fill="#ffffff"/>
+          <circle cx="50" cy="50" r="8" fill="#008751"/>
+        </svg>
+        <div class="brand-title-wrap">
+          <h2>Digital Seva Portal</h2>
+          <p>Ministry of Electronics & IT, Government of India</p>
+        </div>
+      </a>
+      <span class="role-badge" id="userRoleBadge">Loading...</span>
+    </div>
+
+    <div class="panel-header-right">
+      <!-- 1. Expandable Search Icon -->
+      <div class="header-search-wrap" id="headerSearchWrap">
+        <button class="header-icon-btn" id="headerSearchToggleBtn" onclick="toggleHeaderSearch()" title="Search portal (⌘K or /)">
+          <i class="fa-solid fa-magnifying-glass icon-glyph"></i>
+        </button>
+        <div class="header-search-expandable" id="headerSearchExpandable">
+          <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+          <input type="text" id="headerOmniInput" class="header-search-input" placeholder="Search VLEs, Apps, Schemes... (Esc)" autocomplete="off">
+          <span class="header-search-kbd"><kbd>⌘K</kbd></span>
+          <button class="header-search-close" id="headerSearchCloseBtn" onclick="closeHeaderSearch()" title="Close Search">&times;</button>
+        </div>
+      </div>
+
+      <!-- 2. Live IST Clock & Status Pill -->
+      <div class="header-ist-badge" title="Server Cluster: Online">
+        <span class="status-dot-green"></span>
+        <span id="liveIstClock">Online • IST</span>
+      </div>
+
+      <!-- 3. Golden CSC Wallet & Top-up Icon Button -->
+      <div class="header-wallet-pill">
+        <div class="wallet-pill-info" onclick="window.location.href='wallet.html'" title="View Wallet & Passbook Ledger">
+          <i class="fa-solid fa-wallet wallet-pill-icon" style="color: #d97706;"></i>
+          <span class="wallet-pill-amt" id="headerWalletBalance">₹0.00</span>
+        </div>
+        <button class="btn-topup-icon open-topup-btn" title="Recharge CSC Wallet (+ Funds)">
+          <i class="fa-solid fa-plus" style="margin-right:4px;"></i> Top-up
+        </button>
+      </div>
+
+      <!-- 4. Notification Bell with Live Alerts Dropdown -->
+      <div class="notification-wrap" id="notificationWrap">
+        <button class="header-icon-btn notification-bell-btn" id="notificationBellBtn" title="Audit & Live Alerts">
+          <span class="icon-glyph"><i class="fa-solid fa-bell"></i></span>
+          <span class="notification-badge-pulse" id="unreadNotifCount">3</span>
+        </button>
+        <div class="notification-dropdown" id="notificationDropdown">
+          <div class="notif-dropdown-header">
+            <h4>Live Portal Audit Alerts</h4>
+            <span class="notif-badge-pill">Real-time</span>
+          </div>
+          <div class="notif-dropdown-list" id="notifDropdownList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Profile Icon with Detailed Dropdown on Click -->
+      <div class="profile-dropdown-wrap" id="profileDropdownWrap">
+        <button class="header-profile-trigger" id="profileMenuBtn" onclick="toggleProfileDropdown()" title="Click to view operator details">
+          <div class="avatar" id="headerUserAvatar">U</div>
+          <i class="fa-solid fa-chevron-down profile-caret" style="font-size:11px;"></i>
+        </button>
+
+        <div class="profile-dropdown-card" id="profileDropdownCard">
+          <div class="profile-card-header">
+            <div class="avatar-lg" id="dropdownUserAvatar">U</div>
+            <div class="profile-card-user-info">
+              <div class="profile-card-name" id="dropdownUserName">Operator Name</div>
+              <div class="profile-card-csc-id copyable" id="dropdownUserCscId" onclick="copyToClipboard(this.innerText, 'CSC ID')" title="Click to copy unique CSC ID">CSC000000 <i class="fa-regular fa-copy"></i></div>
+              <span class="role-badge-sm" id="dropdownUserRole">SUPER ADMIN</span>
+            </div>
+          </div>
+
+          <div class="profile-card-meta">
+            <div class="profile-meta-row">
+              <span class="meta-label">Center Name:</span>
+              <span class="meta-val" id="dropdownUserCenter">—</span>
+            </div>
+            <div class="profile-meta-row">
+              <span class="meta-label">Location:</span>
+              <span class="meta-val" id="dropdownUserLocation">—</span>
+            </div>
+            <div class="profile-meta-row">
+              <span class="meta-label">Wallet Balance:</span>
+              <span class="meta-val bold-gold" id="dropdownUserWallet">₹0.00</span>
+            </div>
+          </div>
+
+          <div class="profile-card-menu">
+            <a class="dropdown-menu-item" onclick="window.location.href='profile.html'">
+              <i class="fa-solid fa-user menu-item-icon"></i>
+              <div class="menu-item-text">
+                <strong>My Center Profile</strong>
+                <small>Registry details & center address</small>
+              </div>
+            </a>
+            <a class="dropdown-menu-item" onclick="window.location.href='wallet.html'">
+              <i class="fa-solid fa-wallet menu-item-icon"></i>
+              <div class="menu-item-text">
+                <strong>Wallet & Passbook</strong>
+                <small>View real-time audit ledger</small>
+              </div>
+            </a>
+            <a class="dropdown-menu-item" onclick="window.location.href='tickets.html'">
+              <i class="fa-solid fa-headset menu-item-icon"></i>
+              <div class="menu-item-text">
+                <strong>Helpdesk Tickets</strong>
+                <small>Grievance & operator queries</small>
+              </div>
+            </a>
+          </div>
+
+          <div class="profile-card-footer">
+            <button class="btn-dropdown-logout" id="dropdownLogoutBtn">
+              <i class="fa-solid fa-right-from-bracket" style="margin-right:8px;"></i> Sign Out of Portal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Panel Body Layout -->
+  <div class="panel-layout">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <aside class="panel-sidebar" id="panelSidebar">
+      <div class="sidebar-mobile-header">
+        <span style="font-weight: 800; font-size: 14.5px; color: #ffffff;">Digital Seva Navigation</span>
+        <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close navigation menu">&times;</button>
+      </div>
+      <ul class="sidebar-nav">
+        <li class="nav-section-title">Core Operations</li>
+        <li>
+          <a class="nav-link" data-view="dashboard" href="dashboard.html">
+            <i class="fa-solid fa-gauge-high nav-icon"></i>
+            <span>Dashboard Overview</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link active" data-view="applications" href="applications.html">
+            <i class="fa-solid fa-file-invoice nav-icon"></i>
+            <span>Citizen Applications</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="services" href="services.html">
+            <i class="fa-solid fa-cubes nav-icon"></i>
+            <span>Services Catalog</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="wallet" href="wallet.html">
+            <i class="fa-solid fa-wallet nav-icon"></i>
+            <span>Wallet & Passbook</span>
+          </a>
+        </li>
+
+        <!-- Super Admin Only Sections -->
+        <li class="nav-section-title admin-only-nav">Administration</li>
+        <li class="admin-only-nav">
+          <a class="nav-link" data-view="recharge_requests" href="recharge.html" id="nav-recharge_requests">
+            <i class="fa-solid fa-money-bill-transfer nav-icon"></i>
+            <span>Recharge Requests</span>
+            <span class="nav-counter-badge" id="sidebarPendingRechargeBadge" style="display:none;">0</span>
+          </a>
+        </li>
+        <li class="admin-only-nav">
+          <a class="nav-link" data-view="vles" href="vles.html">
+            <i class="fa-solid fa-users-gear nav-icon"></i>
+            <span>VLE Network Directory</span>
+          </a>
+        </li>
+        <li class="admin-only-nav">
+          <a class="nav-link" data-view="service_manager" href="service_manager.html">
+            <i class="fa-solid fa-sliders nav-icon"></i>
+            <span>Services Management</span>
+          </a>
+        </li>
+
+        <li class="nav-section-title">Help & Profile</li>
+        <li>
+          <a class="nav-link" data-view="tickets" href="tickets.html">
+            <i class="fa-solid fa-headset nav-icon"></i>
+            <span>Helpdesk & Tickets</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" data-view="profile" href="profile.html">
+            <i class="fa-solid fa-id-badge nav-icon"></i>
+            <span>My Center Profile</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Sidebar Support Quick Card -->
+      <div class="sidebar-footer-card">
+        <h5><i class="fa-solid fa-phone-volume" style="color:#ea580c; margin-right:6px;"></i> 24x7 VLE Helpline</h5>
+        <p>National Support Desk: <strong>1800-121-3468</strong></p>
+        <button class="btn-sm btn-receipt" style="width: 100%;" onclick="document.querySelector('[data-view=tickets]').click();">
+          Raise Ticket &rarr;
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="panel-main">
+      <div class="view-container">
+
+        
+        <div class="panel-view" id="view-applications" style="display: block;">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Citizen Applications & Orders</h2>
+              <p id="applicationsSubTitle">Role-based view of registered citizen applications.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-outline" onclick="exportApplicationsCsv()"><i class="fa-solid fa-file-arrow-down" style="margin-right:4px;"></i> Export to CSV</button>
+              <button class="btn btn-accent" onclick="openApplyModal()"><i class="fa-solid fa-circle-plus" style="margin-right:4px;"></i> New Application</button>
+            </div>
+          </div>
+
+          <!-- Quick Status Filter Tab Pills -->
+          <div class="table-tab-pills" id="appStatusTabs">
+            <button class="tab-pill active" onclick="setAppStatusTab('All', this)">All Applications <span class="tab-count" id="tabCountAll">0</span></button>
+            <button class="tab-pill" onclick="setAppStatusTab('Pending', this)">Pending <span class="tab-count" id="tabCountPending">0</span></button>
+            <button class="tab-pill" onclick="setAppStatusTab('In Progress', this)">In Progress <span class="tab-count" id="tabCountInProgress">0</span></button>
+            <button class="tab-pill" onclick="setAppStatusTab('Approved', this)">Approved <span class="tab-count" id="tabCountApproved">0</span></button>
+            <button class="tab-pill" onclick="setAppStatusTab('Completed', this)">Completed <span class="tab-count" id="tabCountCompleted">0</span></button>
+            <button class="tab-pill" onclick="setAppStatusTab('Rejected', this)">Rejected <span class="tab-count" id="tabCountRejected">0</span></button>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar-search">
+              <input type="text" id="appSearchInput" class="search-ctrl" placeholder="Search by App No, Citizen, Phone, or Service..." oninput="filterApplications()">
+            </div>
+            <div class="toolbar-filters">
+              <select id="appStatusFilter" class="filter-select" onchange="filterApplications()">
+                <option value="All">All Application Statuses</option>
+                <option value="Pending">Pending Review</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Approved">Approved</option>
+                <option value="Completed">Completed</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+              <button type="button" class="btn-reset-filter" onclick="resetAppFilters()" title="Reset Filters">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+              </button>
+            </div>
+          </div>
+
+          <div class="table-card" style="border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+            <div style="overflow-x: auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Application No / Timestamp</th>
+                    <th class="admin-only-feature">VLE Operator</th>
+                    <th>Citizen Beneficiary</th>
+                    <th>Service Scheme</th>
+                    <th>Fee & Comm</th>
+                    <th>Status</th>
+                    <th>Official Remarks</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="applicationsTableBody">
+                  <tr><td colspan="8" style="text-align:center; padding: 28px;">Loading applications...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination Footer -->
+            <div class="table-pagination-footer" id="appPaginationFooter">
+              <div class="pagination-info" id="appPaginationInfo">
+                Showing <strong>0</strong> to <strong>0</strong> of <strong>0</strong> entries
+              </div>
+              <div class="pagination-controls-wrap">
+                <div class="pagination-size-select">
+                  <label for="appPageSize">Show</label>
+                  <select id="appPageSize" class="page-size-ctrl">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                  </select>
+                  <span>entries</span>
+                </div>
+                <div class="pagination-buttons" id="appPaginationButtons"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+      </div>
+    </main>
+  </div>
+
+<!-- MODAL: Super Admin Create New User / VLE (Feature requested by User) -->
+  <div class="modal-overlay" id="createUserModal">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3>Onboard New User / VLE Operator</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="createUserForm">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="newUserName">Full Name *</label>
+              <input type="text" id="newUserName" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="newUserEmail">Email Address *</label>
+              <input type="email" id="newUserEmail" class="form-control" placeholder="vle@digitalseva.gov.in" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="newUserCscId">Unique CSC ID *</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="newUserCscId" class="form-control" placeholder="e.g. CSC9821447" style="font-family: var(--font-mono); font-weight:700;" required>
+                <button type="button" class="btn btn-outline" onclick="generateNewRandomCscId()" title="Generate Random Unique ID"><i class="fa-solid fa-arrows-rotate"></i></button>
+              </div>
+              <small style="color: #64748b; font-size: 11px;">Must be unique across the platform.</small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newUserRole">Portal Role</label>
+              <select id="newUserRole" class="form-control">
+                <option value="user">VLE Operator (User)</option>
+                <option value="admin">Super Admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="newUserPhone">Mobile Number</label>
+              <input type="tel" id="newUserPhone" class="form-control" placeholder="10-digit mobile number">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="newUserWallet">Initial Wallet Balance (₹)</label>
+              <input type="number" id="newUserWallet" class="form-control" value="500.00" step="50" min="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newUserCenter">Centre / Kendra Name</label>
+            <input type="text" id="newUserCenter" class="form-control" placeholder="e.g. Kumar CSC Seva Kendra">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="newUserState">State</label>
+              <select id="newUserState" class="form-control">
+                <option value="Delhi">Delhi</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Punjab">Punjab</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="newUserDistrict">District</label>
+              <input type="text" id="newUserDistrict" class="form-control" placeholder="e.g. South Delhi">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newUserPassword">Password *</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="newUserPassword" class="form-control" placeholder="Password" required>
+              <button type="button" class="btn btn-outline" onclick="generateRandomPassword()" title="Auto-generate secure password"><i class="fa-solid fa-key"></i> Auto</button>
+            </div>
+          </div>
+
+          <button type="submit" id="createUserSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14.5px; margin-top: 10px;">
+            Create User Account with Unique ID
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Super Admin Add New Service -->
+  <div class="modal-overlay" id="addServiceModal">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>Add New Scheme / Service</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addServiceForm">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Service Code *</label>
+              <input type="text" id="srvCode" class="form-control" placeholder="e.g. CSC-G2C-009" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category *</label>
+              <select id="srvCategory" class="form-control" required>
+                <option value="G2C Central">G2C Central</option>
+                <option value="G2C State">G2C State</option>
+                <option value="Financial & Banking">Financial & Banking</option>
+                <option value="Bill Payments & BBPS">Bill Payments & BBPS</option>
+                <option value="Health & Insurance">Health & Insurance</option>
+                <option value="Education & Skills">Education & Skills</option>
+                <option value="Travel & Transport">Travel & Transport</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Scheme / Service Name *</label>
+            <input type="text" id="srvName" class="form-control" placeholder="Full service name" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Government Department</label>
+            <input type="text" id="srvDept" class="form-control" placeholder="e.g. Ministry of Agriculture">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label">Department Fee (₹) *</label>
+              <input type="number" id="srvFee" class="form-control" step="1" min="0" value="50.00" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">VLE Commission (₹) *</label>
+              <input type="number" id="srvComm" class="form-control" step="1" min="0" value="15.00" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Required Documents</label>
+            <input type="text" id="srvDocs" class="form-control" placeholder="e.g. Aadhaar Card, Land Record, Bank Passbook">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Service Description</label>
+            <textarea id="srvDesc" class="form-control" rows="2" placeholder="Brief outline of citizen entitlement..."></textarea>
+          </div>
+
+          <button type="submit" id="addServiceSubmitBtn" class="btn btn-accent" style="width: 100%; padding: 12px;">
+            Publish Service to Catalog
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Super Admin Ticket Reply / Resolve -->
+  <div class="modal-overlay" id="adminTicketReplyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Respond to Support Ticket</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="adminTicketReplyForm">
+          <input type="hidden" id="replyTicketId">
+          <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-md); margin-bottom: 16px; font-size: 13px; border: 1px solid var(--border-subtle);">
+            <div>Ticket: <strong id="replyTicketNo"></strong></div>
+            <div style="color: var(--text-muted); margin-top: 4px;" id="replyTicketSubject"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Ticket Status</label>
+            <select id="replyTicketStatus" class="form-control">
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Official Helpdesk Response *</label>
+            <textarea id="replyTicketMessage" class="form-control" rows="4" placeholder="Enter resolution explanation..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+            Submit Official Response
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Apply For Service (Deducts from Wallet in real-time) -->
+  <div class="modal-overlay" id="applyServiceModal">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3>New Citizen Service Application</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="newApplicationForm">
+          <div class="form-group">
+            <label class="form-label">Select Government / B2C Service *</label>
+            <select id="applyServiceSelect" class="form-control" required>
+              <option value="">-- Choose Service --</option>
+            </select>
+          </div>
+
+          <!-- Fee Calculation Card -->
+          <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13.5px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="color:var(--text-muted);">Department Service Fee:</span>
+              <strong id="applyFeeDisplay">₹0.00</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="color:var(--text-muted);">VLE Commission Credited:</span>
+              <strong style="color:var(--csc-green-dark);" id="applyCommDisplay">+₹0.00</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-top:1.5px solid var(--border-subtle); padding-top:8px; margin-top:6px;">
+              <span style="font-weight:700; color:var(--text-heading);">Net Wallet Debit:</span>
+              <strong style="color:var(--csc-blue-600); font-size:16px; font-family:var(--font-mono);" id="applyNetDebitDisplay">₹0.00</strong>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="citizenNameInput">Citizen Full Name *</label>
+            <input type="text" id="citizenNameInput" class="form-control" placeholder="Beneficiary name" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="citizenPhoneInput">Citizen Mobile Number *</label>
+            <input type="tel" id="citizenPhoneInput" class="form-control" placeholder="10-digit mobile number" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="citizenIdDocInput">Identifier / Doc Number (Aadhaar / PAN / Vehicle / CA No)</label>
+            <input type="text" id="citizenIdDocInput" class="form-control" placeholder="Optional document number">
+          </div>
+
+          <button type="submit" id="submitAppBtn" class="btn btn-accent" style="width: 100%; padding: 12px; font-size: 14.5px;">
+            Confirm & Pay from Wallet
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Request CSC Wallet Recharge (VLE) with Tiered Bonus & Minimum ₹5K -->
+  <div class="modal-overlay" id="topupModal">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-header">
+        <div>
+          <h3>Request CSC Wallet Recharge</h3>
+          <p style="font-size: 11.5px; color: #94a3b8; margin: 2px 0 0 0;">Super Admin Approved • Minimum Recharge ₹5,000 with Bonus Incentives</p>
+        </div>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px 24px;">
+        <form id="walletRechargeRequestForm">
+          <!-- Quick Amount & Bonus Selection Preset Grid -->
+          <div style="margin-bottom: 16px;">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Select Recharge Package (Min ₹5,000)</span>
+              <span style="font-size: 11.5px; color: var(--csc-blue-600); font-weight: 700;"><i class="fa-solid fa-gift" style="margin-right:4px;"></i> Extra Bonus Credit</span>
+            </label>
+            <div class="recharge-presets-grid" id="rechargePresetsGrid">
+              <div class="recharge-preset-card active" data-amount="5000" onclick="selectRechargePreset(5000, this)">
+                <div class="preset-amt">₹5,000</div>
+                <div class="preset-bonus">+₹150 Bonus (3%)</div>
+                <div class="preset-total">Total: ₹5,150</div>
+              </div>
+              <div class="recharge-preset-card" data-amount="10000" onclick="selectRechargePreset(10000, this)">
+                <div class="preset-amt">₹10,000</div>
+                <div class="preset-bonus highlight">+₹400 Bonus (4%) <i class="fa-solid fa-star" style="color:#eab308; font-size:10px;"></i></div>
+                <div class="preset-total">Total: ₹10,400</div>
+              </div>
+              <div class="recharge-preset-card" data-amount="15000" onclick="selectRechargePreset(15000, this)">
+                <div class="preset-amt">₹15,000</div>
+                <div class="preset-bonus">+₹750 Bonus (5%)</div>
+                <div class="preset-total">Total: ₹15,750</div>
+              </div>
+              <div class="recharge-preset-card" data-amount="20000" onclick="selectRechargePreset(20000, this)">
+                <div class="preset-amt">₹20,000</div>
+                <div class="preset-bonus">+₹1,200 Bonus (6%)</div>
+                <div class="preset-total">Total: ₹21,200</div>
+              </div>
+              <div class="recharge-preset-card" data-amount="25000" onclick="selectRechargePreset(25000, this)">
+                <div class="preset-amt">₹25,000</div>
+                <div class="preset-bonus">+₹1,750 Bonus (7%)</div>
+                <div class="preset-total">Total: ₹26,750</div>
+              </div>
+              <div class="recharge-preset-card" data-amount="50000" onclick="selectRechargePreset(50000, this)">
+                <div class="preset-amt">₹50,000</div>
+                <div class="preset-bonus highlight-gold">+₹4,000 Bonus (8%) <i class="fa-solid fa-rocket" style="color:#eab308; font-size:10px;"></i></div>
+                <div class="preset-total">Total: ₹54,000</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Amount Input -->
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="rechargeAmountInput">Recharge Amount (₹) * <span style="font-size: 11px; color:#ef4444;">(Minimum ₹5,000)</span></label>
+            <input type="number" id="rechargeAmountInput" class="form-control" min="5000" step="500" value="5000" placeholder="Minimum 5000" required oninput="handleRechargeAmountChange()">
+          </div>
+
+          <!-- Live Dynamic Bonus Breakdown Card -->
+          <div class="bonus-calc-card" id="bonusCalcCard">
+            <div class="bonus-calc-row">
+              <span class="bonus-calc-label">Base Recharge Capital:</span>
+              <span class="bonus-calc-val" id="calcBaseAmount">₹5,000.00</span>
+            </div>
+            <div class="bonus-calc-row">
+              <span class="bonus-calc-label">Promotional Bonus Added (<span id="calcBonusRate">3%</span>):</span>
+              <span class="bonus-calc-val text-green" id="calcBonusAmount">+₹150.00</span>
+            </div>
+            <div class="bonus-calc-divider"></div>
+            <div class="bonus-calc-row total">
+              <span class="bonus-calc-label">Total Credited to CSC Wallet:</span>
+              <span class="bonus-calc-val text-blue" id="calcTotalCredit">₹5,150.00</span>
+            </div>
+          </div>
+
+          <!-- Official CSC Central Payment Account Details -->
+          <div class="csc-payment-details-box">
+            <div style="font-weight: 700; font-size: 12.5px; color: #0f172a; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
+              <span><i class="fa-solid fa-building-columns" style="color:#0284c7; margin-right:4px;"></i> CSC Central Settlement Account Details:</span>
+              <span style="font-size: 11px; color: #16a34a; font-weight: 600;">Verified SPV</span>
+            </div>
+            <div class="payment-detail-item">
+              <span>Official UPI ID:</span>
+              <code class="copyable" onclick="copyToClipboard('csc.spv.settle@sbi', 'UPI ID')">csc.spv.settle@sbi <i class="fa-regular fa-copy"></i></code>
+            </div>
+            <div class="payment-detail-item">
+              <span>Bank Name:</span>
+              <strong>State Bank of India (SBI)</strong>
+            </div>
+            <div class="payment-detail-item">
+              <span>Account Number:</span>
+              <code class="copyable" onclick="copyToClipboard('392810482910', 'Bank Account Number')">392810482910 <i class="fa-regular fa-copy"></i></code>
+            </div>
+            <div class="payment-detail-item">
+              <span>IFSC Code:</span>
+              <code class="copyable" onclick="copyToClipboard('SBIN0001234', 'IFSC Code')">SBIN0001234 <i class="fa-regular fa-copy"></i></code>
+            </div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 6px; line-height: 1.4;">
+              * Transfer funds using your mobile banking / UPI app, then submit the 12-digit UTR or Reference Number below for Admin verification.
+            </div>
+          </div>
+
+          <!-- Payment Mode -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label" for="rechargePaymentMode">Payment Transfer Mode *</label>
+            <select id="rechargePaymentMode" class="form-control" required>
+              <option value="UPI (PhonePe/GPay/Paytm/BHIM)">UPI Transfer (PhonePe / GPay / Paytm / BHIM)</option>
+              <option value="IMPS Instant Transfer">IMPS (Immediate Payment Service)</option>
+              <option value="NEFT / RTGS">NEFT / RTGS Bank Transfer</option>
+              <option value="Direct Bank Deposit / CDM">Direct Cash Deposit / CDM</option>
+            </select>
+          </div>
+
+          <!-- Transaction Reference / UTR Number -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label" for="rechargeUtrInput">Bank Transaction Ref / UTR Number *</label>
+            <input type="text" id="rechargeUtrInput" class="form-control" placeholder="e.g. 428901928301 or UPI Ref ID" required autocomplete="off">
+          </div>
+
+          <!-- Optional Remarks -->
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="rechargeRemarksInput">Remarks / Note (Optional)</label>
+            <input type="text" id="rechargeRemarksInput" class="form-control" placeholder="e.g. Morning recharge for citizen scheme drives">
+          </div>
+
+          <button type="submit" id="rechargeSubmitBtn" class="btn btn-accent" style="width: 100%; padding: 13px; font-size: 14.5px; font-weight: 700;">
+            <i class="fa-solid fa-paper-plane" style="margin-right:6px;"></i> Submit Recharge Request to Admin
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Printable Acknowledgement Slip -->
+  <div class="modal-overlay" id="receiptModal">
+    <div class="modal-card" style="max-width: 640px;">
+      <div class="modal-header" style="background: #00223a;">
+        <h3>CSC Digital Acknowledgement Receipt</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="receipt-paper">
+          <div class="receipt-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 800; color: #002b49; font-size: 17px;">Digital Seva Portal</span>
+              <div class="receipt-qr-box">
+                CSC QR<br>VERIFIED
+              </div>
+            </div>
+            <h3>Common Services Centres</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Ministry of Electronics & IT, Government of India</p>
+          </div>
+
+          <div class="receipt-grid">
+            <div class="receipt-label">Application Number:</div>
+            <div class="receipt-val" id="receiptAppNo">—</div>
+
+            <div class="receipt-label">Date & Time:</div>
+            <div class="receipt-val" id="receiptDate">—</div>
+
+            <div class="receipt-label">Citizen Name:</div>
+            <div class="receipt-val" id="receiptCitizenName">—</div>
+
+            <div class="receipt-label">Contact Number:</div>
+            <div class="receipt-val" id="receiptCitizenPhone">—</div>
+
+            <div class="receipt-label">Identifier / Doc:</div>
+            <div class="receipt-val" id="receiptCitizenDoc">—</div>
+
+            <div class="receipt-label">Service Scheme:</div>
+            <div class="receipt-val" id="receiptService">—</div>
+
+            <div class="receipt-label">Category / Department:</div>
+            <div class="receipt-val" id="receiptDept">—</div>
+
+            <div class="receipt-label">Fee Collected:</div>
+            <div class="receipt-val" id="receiptFee">—</div>
+
+            <div class="receipt-label">Application Status:</div>
+            <div class="receipt-val" id="receiptStatus">—</div>
+
+            <div class="receipt-label">VLE CSC ID:</div>
+            <div class="receipt-val" id="receiptVleCscId">—</div>
+
+            <div class="receipt-label">Kendra / Centre:</div>
+            <div class="receipt-val" id="receiptVleCenter">—</div>
+          </div>
+
+          <div class="receipt-footer">
+            Official digitally stamped receipt. Verified against CSC National Ledger.<br>
+            Please preserve this acknowledgement for tracking and verification.
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:18px;">
+          <button class="btn btn-outline close-panel-modal">Close</button>
+          <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print" style="margin-right:4px;"></i> Print Receipt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Super Admin Application Status Action -->
+  <div class="modal-overlay" id="adminStatusModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Update Application Status</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="adminStatusForm">
+          <input type="hidden" id="adminAppId">
+          <div style="font-size: 13.5px; margin-bottom: 14px; background: #f8fafc; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            Application: <strong id="adminAppNoDisplay" style="font-family: var(--font-mono);"></strong>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="adminStatusSelect">New Status</label>
+            <select id="adminStatusSelect" class="form-control">
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Approved">Approved</option>
+              <option value="Completed">Completed</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="adminStatusNotes">Official Remarks / Department Feedback</label>
+            <textarea id="adminStatusNotes" class="form-control" rows="3" placeholder="Enter remarks..."></textarea>
+          </div>
+
+          <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="adminRefundCheckbox">
+            <label for="adminRefundCheckbox" style="font-size:12.5px; color:#b91c1c; font-weight:700;">
+              Refund Govt Fee to VLE wallet (if Rejecting)
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-accent" style="width: 100%; padding: 12px;">
+            Apply Status Update
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Super Admin Direct VLE Wallet Adjustment & Balance Edit -->
+  <div class="modal-overlay" id="adjustWalletModal">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div>
+          <h3>Direct VLE Wallet Management</h3>
+          <p style="font-size: 11.5px; color: #94a3b8; margin: 2px 0 0 0;">Super Admin Controls: Credit, Debit, or Edit Exact Balance</p>
+        </div>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 22px;">
+        <form id="adjustWalletForm">
+          <input type="hidden" id="adjustVleId">
+
+          <!-- Target VLE Selector (Dropdown if opened generally, or display if opened from row) -->
+          <div class="form-group" id="adjustVleSelectGroup" style="display:none; margin-bottom: 14px;">
+            <label class="form-label" for="adjustVleSelect">Select VLE Operator *</label>
+            <select id="adjustVleSelect" class="form-control" onchange="handleAdjustVleSelectChange(this.value)">
+              <option value="">-- Choose Operator --</option>
+            </select>
+          </div>
+
+          <div style="font-size: 13.5px; margin-bottom: 14px; font-weight: 700; background: #f8fafc; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;" id="adjustVleHeaderInfo">
+            <span id="adjustVleName">Target Operator</span>
+            <span class="badge badge-approved" id="adjustVleCurrentBalBadge" style="font-family:var(--font-mono); font-size:12px;">₹0.00</span>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="adjustType">Action Type *</label>
+            <select id="adjustType" class="form-control" onchange="updateAdjustPreview()">
+              <option value="credit">Credit (+) Funds to Wallet</option>
+              <option value="debit">Debit (-) Funds from Wallet</option>
+              <option value="set">Direct Edit / Set Exact Balance (= ₹)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="adjustAmount" id="adjustAmountLabel">Amount (₹) *</label>
+            <input type="number" id="adjustAmount" class="form-control" step="10" min="0" placeholder="Enter amount in ₹" required oninput="updateAdjustPreview()">
+          </div>
+
+          <!-- Quick Amount Buttons for Admin -->
+          <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;">
+            <button type="button" class="btn-sm btn-receipt" onclick="setAdjustQuickAmount(5000)">+₹5,000</button>
+            <button type="button" class="btn-sm btn-receipt" onclick="setAdjustQuickAmount(10000)">+₹10,000</button>
+            <button type="button" class="btn-sm btn-receipt" onclick="setAdjustQuickAmount(25000)">+₹25,000</button>
+            <button type="button" class="btn-sm btn-receipt" onclick="setAdjustQuickAmount(50000)">+₹50,000</button>
+          </div>
+
+          <!-- Live Balance Preview Box -->
+          <div style="background: #f1f5f9; border-radius: 8px; padding: 10px 14px; font-size: 12.5px; margin-bottom: 14px; border: 1px solid #e2e8f0;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 4px;">
+              <span style="color:#64748b;">Current Balance:</span>
+              <strong id="previewCurrentBal" style="font-family:var(--font-mono);">₹0.00</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-weight:700;">
+              <span style="color:#0f172a;">Resulting Balance:</span>
+              <strong id="previewNewBal" style="font-family:var(--font-mono); color:var(--csc-blue-600); font-size: 14px;">₹0.00</strong>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label class="form-label" for="adjustReason">Audit Reason / Justification *</label>
+            <input type="text" id="adjustReason" class="form-control" placeholder="e.g. Offline cash deposit, incentive or correction" required>
+          </div>
+
+          <button type="submit" id="adjustSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 700;">
+            Confirm Wallet Adjustment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Super Admin Review Recharge Request (Approve / Reject) -->
+  <div class="modal-overlay" id="reviewRechargeModal">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div>
+          <h3>Review Wallet Recharge Request</h3>
+          <p style="font-size: 11.5px; color: #94a3b8; margin: 2px 0 0 0;" id="reviewReqSubtitle">Request ID: —</p>
+        </div>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 22px;">
+        <form id="reviewRechargeForm">
+          <input type="hidden" id="reviewReqId">
+
+          <div class="review-details-card" style="background:#f8fafc; border:1px solid var(--border-subtle); border-radius:8px; padding:14px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:12px; color:#64748b;">Operator:</span>
+              <strong style="font-size:13px;" id="reviewReqOperator">—</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:12px; color:#64748b;">Base Requested Capital:</span>
+              <span style="font-family:var(--font-mono); font-weight:700;" id="reviewReqBaseAmt">₹0.00</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:12px; color:#64748b;">Calculated Bonus:</span>
+              <span style="font-family:var(--font-mono); font-weight:700; color:#16a34a;" id="reviewReqBonusAmt">+₹0.00</span>
+            </div>
+            <div style="border-top:1px dashed #cbd5e1; margin:8px 0;"></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:12px; font-weight:700; color:#0f172a;">Total Wallet Credit:</span>
+              <strong style="font-family:var(--font-mono); font-size:16px; color:#0b62a4;" id="reviewReqTotalCredit">₹0.00</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="font-size:12px; color:#64748b;">Payment Transfer Mode:</span>
+              <span style="font-size:12px; font-weight:600;" id="reviewReqMode">—</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="font-size:12px; color:#64748b;">UTR / Ref Number:</span>
+              <code style="font-family:var(--font-mono); font-weight:700; color:#0284c7;" id="reviewReqUtr">—</code>
+            </div>
+            <div style="display:flex; justify-content:space-between;" id="reviewReqRemarksRow">
+              <span style="font-size:12px; color:#64748b;">Operator Note:</span>
+              <span style="font-size:12px; color:#334155; max-width:65%; text-align:right;" id="reviewReqRemarks">—</span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label">Administrative Decision *</label>
+            <div style="display:flex; gap:12px;">
+              <label style="flex:1; display:flex; align-items:center; gap:8px; padding:10px 14px; border:1.5px solid #86efac; background:#f0fdf4; border-radius:8px; cursor:pointer;">
+                <input type="radio" name="reviewDecision" value="approved" checked>
+                <span style="font-weight:700; color:#15803d; font-size:13px;"><i class="fa-solid fa-circle-check" style="margin-right:4px;"></i> Approve & Credit</span>
+              </label>
+              <label style="flex:1; display:flex; align-items:center; gap:8px; padding:10px 14px; border:1.5px solid #fca5a5; background:#fef2f2; border-radius:8px; cursor:pointer;">
+                <input type="radio" name="reviewDecision" value="rejected">
+                <span style="font-weight:700; color:#b91c1c; font-size:13px;"><i class="fa-solid fa-circle-xmark" style="margin-right:4px;"></i> Reject Request</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label class="form-label" for="reviewAdminNotes">Admin Remarks / Audit Note</label>
+            <input type="text" id="reviewAdminNotes" class="form-control" placeholder="e.g. Bank credit verified or invalid UTR" value="Bank payment verified and approved.">
+          </div>
+
+          <button type="submit" id="reviewSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 700;">
+            Confirm Action
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Raise Support Ticket -->
+  <div class="modal-overlay" id="newTicketModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Raise Support / Grievance Ticket</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="newTicketForm">
+          <div class="form-group">
+            <label class="form-label">Issue Category</label>
+            <select id="ticketCategory" class="form-control" required>
+              <option value="Wallet & Payment">Wallet & Payment Settlement</option>
+              <option value="Service Technical Error">Service Technical Error</option>
+              <option value="Application Rejection Query">Application Rejection Query</option>
+              <option value="Biometric / Device Driver">Biometric / Device Driver</option>
+              <option value="General Inquiry">General Inquiry</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select id="ticketPriority" class="form-control">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High (Urgent)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Subject *</label>
+            <input type="text" id="ticketSubject" class="form-control" placeholder="Brief issue summary" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Detailed Message *</label>
+            <textarea id="ticketMessage" class="form-control" rows="4" placeholder="Describe the issue in detail..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+            Submit Ticket to Helpdesk
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Super Admin VLE Operator Detail Profile -->
+  <div class="modal-overlay" id="vleDetailModal">
+    <div class="modal-card" style="max-width: 640px;">
+      <div class="modal-header" style="background: #00223a;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="avatar" id="modalVleAvatar" style="width: 44px; height: 44px; font-size: 16px; background: #00223a;">V</div>
+          <div>
+            <h3 id="modalVleName" style="color: #fff; font-size: 17px; margin-bottom: 2px;">VLE Operator Details</h3>
+            <span class="badge badge-approved" id="modalVleRoleBadge">VLE Operator</span>
+          </div>
+        </div>
+        <button class="modal-close-btn close-panel-modal" style="color: #fff;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <div class="vle-profile-grid">
+          <div class="vle-profile-cell">
+            <span class="vle-p-label">Unique CSC ID</span>
+            <div class="vle-p-val copyable" id="modalVleCscId" onclick="copyToClipboard(this.innerText, 'CSC ID')">—</div>
+          </div>
+          <div class="vle-profile-cell">
+            <span class="vle-p-label">Account Status</span>
+            <div class="vle-p-val" id="modalVleStatus">—</div>
+          </div>
+          <div class="vle-profile-cell">
+            <span class="vle-p-label">Email Address</span>
+            <div class="vle-p-val" id="modalVleEmail">—</div>
+          </div>
+          <div class="vle-profile-cell">
+            <span class="vle-p-label">Registered Mobile</span>
+            <div class="vle-p-val" id="modalVlePhone">—</div>
+          </div>
+          <div class="vle-profile-cell">
+            <span class="vle-p-label">Centre / Kendra Name</span>
+            <div class="vle-p-val" id="modalVleCenter">—</div>
+          </div>
+          <div class="vle-profile-cell">
+            <span class="vle-p-label">State & District</span>
+            <div class="vle-p-val" id="modalVleLocation">—</div>
+          </div>
+          <div class="vle-profile-cell highlight">
+            <span class="vle-p-label">Available Wallet Capital</span>
+            <div class="vle-p-val highlight-green" id="modalVleWallet">₹0.00</div>
+          </div>
+          <div class="vle-profile-cell highlight">
+            <span class="vle-p-label">Total Citizen Applications</span>
+            <div class="vle-p-val highlight-blue" id="modalVleApps">0</div>
+          </div>
+          <div class="vle-profile-cell full-width">
+            <span class="vle-p-label">Enrolled In Portal</span>
+            <div class="vle-p-val" id="modalVleDate">—</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+          <button class="btn btn-outline close-panel-modal">Close</button>
+          <button class="btn btn-accent" id="modalVleAdjustWalletBtn"><i class="fa-solid fa-wallet" style="margin-right:4px;"></i> Adjust Wallet</button>
+          <button class="btn btn-primary" id="modalVleToggleStatusBtn"><i class="fa-solid fa-user-check" style="margin-right:4px;"></i> Toggle Status</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Universal Omnisearch Spotlight (⌘K / / Shortcut) -->
+  <div class="modal-overlay" id="omnisearchModal">
+    <div class="omnisearch-card">
+      <div class="omnisearch-header">
+        <span class="omnisearch-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" id="omnisearchInput" class="omnisearch-input" placeholder="Search VLE operators, applications, schemes, or citizen..." autocomplete="off">
+        <span class="omnisearch-esc-badge close-panel-modal">ESC</span>
+      </div>
+
+      <div class="omnisearch-tabs">
+        <button class="omnisearch-tab active" onclick="setOmnisearchTab('all', this)">All Results</button>
+        <button class="omnisearch-tab" onclick="setOmnisearchTab('vles', this)">VLEs</button>
+        <button class="omnisearch-tab" onclick="setOmnisearchTab('apps', this)">Applications</button>
+        <button class="omnisearch-tab" onclick="setOmnisearchTab('services', this)">Schemes</button>
+      </div>
+
+      <div class="omnisearch-body" id="omnisearchResults">
+        <div class="omnisearch-hint">
+          <p>Type keywords to search across central database records.</p>
+          <div class="omnisearch-quick-keys">
+            <span><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
+            <span><kbd>↵</kbd> Select</span>
+            <span><kbd>ESC</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Unified Confirmation Dialog (Replacing native browser confirm()) -->
+  <div class="modal-overlay" id="confirmationModal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header" id="confirmModalHeader" style="background: #00223a;">
+        <h3 id="confirmModalTitle"><i class="fa-solid fa-circle-question" style="margin-right: 8px;"></i> Confirmation</h3>
+        <button class="modal-close-btn" id="confirmCancelCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px; text-align: center;">
+        <div id="confirmIconWrapper" style="width: 56px; height: 56px; border-radius: 50%; background: #eff6ff; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px;">
+          <i class="fa-solid fa-circle-info" id="confirmModalIcon"></i>
+        </div>
+        <p id="confirmModalMessage" style="font-size: 14.5px; color: var(--text-heading); font-weight: 600; line-height: 1.5; margin-bottom: 24px;">
+          Are you sure you want to proceed?
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button type="button" class="btn btn-outline" id="confirmCancelBtn" style="flex: 1; padding: 11px;">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" id="confirmOkBtn" style="flex: 1; padding: 11px;">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modern Interactive Toast Notifications Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js?v=20261002"></script>
+  <script src="js/panel.js?v=20261002"></script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Seva Portal - CSC e-Governance Services India</title>
+  <meta name="description" content="Digital Seva Portal is an initiative under Digital India providing Government to Citizen (G2C) and Business to Citizen (B2C) e-services across India.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/portal.css">
+</head>
+<body>
+
+  <!-- Top Utility & Accessibility Bar -->
+  <div class="utility-bar">
+    <div class="utility-container">
+      <div class="utility-left">
+        <div class="gov-indicator">
+          <svg class="flag-icon" viewBox="0 0 640 480">
+            <path fill="#f93" d="M0 0h640v160H0z"/>
+            <path fill="#fff" d="M0 160h640v160H0z"/>
+            <path fill="#128807" d="M0 320h640v160H0z"/>
+            <circle cx="320" cy="240" r="40" fill="none" stroke="#008" stroke-width="4"/>
+          </svg>
+          <span>Government of India</span>
+        </div>
+        <span>|</span>
+        <span>Ministry of Electronics & Information Technology</span>
+      </div>
+
+      <div class="utility-right">
+        <div class="font-controls">
+          <button class="font-btn" title="Decrease font size">A-</button>
+          <button class="font-btn" title="Normal font size">A</button>
+          <button class="font-btn" title="Increase font size">A+</button>
+        </div>
+        <div class="quick-links">
+          <a href="#services-catalog" class="quick-link">CSC Services</a>
+          <a href="#" class="quick-link">CSC Locator</a>
+          <a href="#" class="quick-link">Jaankari Suvidha</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Brand Header -->
+  <header class="main-header">
+    <div class="header-container">
+      <a href="/" class="brand-wrapper">
+        <svg style="height: 48px; width: 48px;" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="46" fill="#002b49"/>
+          <path d="M50 20 L75 35 L75 65 L50 80 L25 65 L25 35 Z" fill="#f37021"/>
+          <circle cx="50" cy="50" r="16" fill="#ffffff"/>
+          <circle cx="50" cy="50" r="8" fill="#008751"/>
+        </svg>
+        <div class="brand-text">
+          <h1>Digital Seva Portal</h1>
+          <p>CSC e-Governance Services India Limited</p>
+        </div>
+      </a>
+
+      <div class="brand-badges">
+        <span class="digital-india-tag">Digital India</span>
+      </div>
+
+      <div class="header-actions" id="authButtonGroup">
+        <a href="#services-catalog" class="btn btn-outline"><i class="fa-solid fa-cubes" style="margin-right:6px;"></i> Explore Services</a>
+        <button class="btn btn-primary open-login-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+          </svg>
+          Login
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Official Notice Ticker Marquee -->
+  <div class="notice-marquee">
+    <span class="ticker-badge">Important Alert</span>
+    <div class="marquee-content">
+      <div class="marquee-track">
+        <i class="fa-solid fa-bullhorn" style="color:#f97316; margin-right:4px;"></i> VLEs: Never share your login ID or password. You are strictly responsible for any transactions resulting from credential misuse. &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+        <i class="fa-solid fa-circle-check" style="color:#22c55e; margin-right:4px;"></i> CSC Olympiad 6.0 student onboarding is now active nationwide. Earn up to ₹40 per registration. &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+        <i class="fa-solid fa-bolt" style="color:#eab308; margin-right:4px;"></i> Instant Electricity Bill Collection via BBPS settled with immediate commission. &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+        <i class="fa-solid fa-wheat-awn" style="color:#f97316; margin-right:4px;"></i> PM-KISAN 17th Installment eKYC and beneficiary registration open across all Kendras.
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-content">
+        <h2>Single Access Window for Citizen & Business e-Services</h2>
+        <p>Common Services Centres (CSC) are the frontline delivery access points for Government-to-Citizen (G2C) and Business-to-Citizen (B2C) services directly within the reach of rural and urban citizens.</p>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-num">5,50,000+</div>
+            <div class="stat-lbl">Active VLEs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">400+</div>
+            <div class="stat-lbl">Govt & B2C Services</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">28 States</div>
+            <div class="stat-lbl">Pan-India Reach</div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn btn-accent open-login-btn">Sign In to Digital Seva</button>
+          <a href="#services-catalog" class="btn btn-outline" style="color:#fff; border-color:#fff;"><i class="fa-solid fa-cubes" style="margin-right:6px;"></i> Explore Services</a>
+        </div>
+      </div>
+
+      <!-- Quick Search / Find Services Box -->
+      <div class="quick-portal-box">
+        <div class="portal-box-header">
+          <h3>Quick Service Finder</h3>
+          <p style="font-size: 12px; color: #64748b;">Search over 400 central and state government schemes</p>
+        </div>
+
+        <div class="search-field">
+          <i class="fa-solid fa-magnifying-glass search-icon-abs" style="color:#64748b; font-size:1rem;"></i>
+          <input type="text" id="serviceSearchInput" class="search-input" placeholder="Type service name: PM Kisan, PAN, Ayushman, Bill...">
+        </div>
+
+        <div style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Popular Daily Services:</div>
+        <div class="popular-chips">
+          <span class="chip" onclick="quickFilterService('AEPS')"><i class="fa-solid fa-fingerprint"></i> AEPS Cash Out</span>
+          <span class="chip" onclick="quickFilterService('Account Opening')"><i class="fa-solid fa-building-columns"></i> Account Opening</span>
+          <span class="chip" onclick="quickFilterService('Mobile')"><i class="fa-solid fa-mobile-screen-button"></i> Mobile Recharge</span>
+          <span class="chip" onclick="quickFilterService('Bill')"><i class="fa-solid fa-bolt"></i> Electricity Bill</span>
+          <span class="chip" onclick="quickFilterService('DTH')"><i class="fa-solid fa-satellite-dish"></i> DTH Recharge</span>
+          <span class="chip" onclick="quickFilterService('Aadhaar')"><i class="fa-solid fa-id-card"></i> Aadhaar Seva</span>
+          <span class="chip" onclick="quickFilterService('PAN')"><i class="fa-solid fa-address-card"></i> PAN Card</span>
+          <span class="chip" onclick="quickFilterService('PM-KISAN')"><i class="fa-solid fa-wheat-awn"></i> PM-KISAN</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Daily Citizen & Banking Services (दैनिक नागरिक एवं बैंकिंग सेवाएं) -->
+  <section class="daily-services-section" id="daily-services">
+    <div class="section-container">
+      <div class="daily-services-header">
+        <div class="daily-services-title-wrap">
+          <h2><i class="fa-solid fa-bolt" style="color: #ea580c;"></i> Daily Citizen & Banking Services (दैनिक नागरिक सेवाएं)</h2>
+          <p>Instant access to AEPS cash withdrawal, account opening across partner banks, mobile & DTH recharge, utility bill payments, Aadhaar & PAN card services.</p>
+        </div>
+        <div style="font-size: 12.5px; color: #0284c7; font-weight: 700;">
+          <i class="fa-solid fa-circle-check"></i> 100% Instant Delivery via CSC Network
+        </div>
+      </div>
+
+      <div class="daily-grid">
+        <!-- 1. AEPS Cash Out -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon blue"><i class="fa-solid fa-fingerprint"></i></div>
+            <div>
+              <div class="daily-card-title">DigiPay - AEPS Cash Out</div>
+              <div class="daily-card-subtitle">NPCI Aadhaar Micro-ATM</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Biometric fingerprint cash withdrawal, mini-statement, and real-time balance check.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-building-columns"></i>
+            <div><strong>Banks:</strong> SBI, BoB, PNB, HDFC, ICICI, Canara, Union Bank</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('8', 'DigiPay - AEPS Cash Withdrawal')">
+            <i class="fa-solid fa-hand-holding-dollar"></i> Start AEPS Cash Out
+          </button>
+        </div>
+
+        <!-- 2. Account Opening -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon green"><i class="fa-solid fa-building-columns"></i></div>
+            <div>
+              <div class="daily-card-title">Bank Account Opening</div>
+              <div class="daily-card-subtitle">Zero-Balance Savings & Current</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Instant digital KYC bank account opening with instant account number and virtual debit card.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div><strong>Partner Banks:</strong> SBI, PNB, BoB, HDFC, ICICI, Axis, Airtel Bank</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('9', 'Bank Account Opening')">
+            <i class="fa-solid fa-user-plus"></i> Open Bank Account
+          </button>
+        </div>
+
+        <!-- 3. Mobile Recharge -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon orange"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div>
+              <div class="daily-card-title">Mobile Recharge 24x7</div>
+              <div class="daily-card-subtitle">Prepaid & Postpaid Plans</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Unlimited voice calls, 4G/5G data add-on packs, and postpaid telecom bill payments.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-signal"></i>
+            <div><strong>Operators:</strong> Reliance Jio, Bharti Airtel, Vodafone Idea (Vi), BSNL</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('10', 'Mobile Recharge (Prepaid & Postpaid)')">
+            <i class="fa-solid fa-bolt"></i> Recharge Mobile
+          </button>
+        </div>
+
+        <!-- 4. Electricity & Utility Bill Payment -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon blue"><i class="fa-solid fa-bolt"></i></div>
+            <div>
+              <div class="daily-card-title">Electricity & Utility Bills</div>
+              <div class="daily-card-subtitle">Bharat BillPay (BBPS)</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Instant online bill fetch and payment for electricity discoms, water boards, and piped cooking gas.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-receipt"></i>
+            <div><strong>Providers:</strong> All State Electricity Discoms (UPPCL, TPDDL, BSES, etc.)</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('6', 'Electricity & Utility Bill Payment')">
+            <i class="fa-solid fa-file-invoice-dollar"></i> Pay Utility Bill
+          </button>
+        </div>
+
+        <!-- 5. DTH TV Recharge -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon purple"><i class="fa-solid fa-satellite-dish"></i></div>
+            <div>
+              <div class="daily-card-title">DTH Satellite TV Recharge</div>
+              <div class="daily-card-subtitle">Instant Activation & Top-up</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Monthly pack renewals, HD channel add-ons, and instant subscriber card top-ups.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-tv"></i>
+            <div><strong>DTH:</strong> Tata Play, Airtel Digital TV, Dish TV, Sun Direct, D2H</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('11', 'DTH Recharge')">
+            <i class="fa-solid fa-satellite"></i> Recharge DTH
+          </button>
+        </div>
+
+        <!-- 6. Aadhaar Seva Kendra -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon emerald"><i class="fa-solid fa-id-card"></i></div>
+            <div>
+              <div class="daily-card-title">Aadhaar Seva Kendra</div>
+              <div class="daily-card-subtitle">UIDAI Official Portal Services</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Biometric eKYC, address change assistance, demographic update, and waterproof PVC smart card order.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-id-badge"></i>
+            <div><strong>Services:</strong> e-KYC Verification • Address Update • PVC Card</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('12', 'Aadhaar Seva Kendra')">
+            <i class="fa-solid fa-fingerprint"></i> Aadhaar Services
+          </button>
+        </div>
+
+        <!-- 7. PAN Card Application -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon blue"><i class="fa-solid fa-address-card"></i></div>
+            <div>
+              <div class="daily-card-title">PAN Card Application</div>
+              <div class="daily-card-subtitle">UTI & Protean NSDL Direct</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Instant 2-hour e-PAN card via Aadhaar biometric, new physical Form 49A, and PAN correction.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-stamp"></i>
+            <div><strong>Portals:</strong> Protean NSDL & UTIITSL Authorized Desks</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('3', 'PAN Card Application (UTI / NSDL)')">
+            <i class="fa-solid fa-id-card-clip"></i> Apply PAN Card
+          </button>
+        </div>
+
+        <!-- 8. Domestic Money Transfer (DMT) -->
+        <div class="daily-card">
+          <div class="daily-card-top">
+            <div class="daily-card-icon green"><i class="fa-solid fa-money-bill-transfer"></i></div>
+            <div>
+              <div class="daily-card-title">Money Transfer (DMT 24x7)</div>
+              <div class="daily-card-subtitle">Instant IMPS / NEFT Settlement</div>
+            </div>
+          </div>
+          <p class="daily-card-desc">Direct account-to-account money remittance to any bank in India 24x7 with instant SMS notification.</p>
+          <div class="daily-partner-badge">
+            <i class="fa-solid fa-building-columns"></i>
+            <div><strong>Coverage:</strong> All 120+ Indian Commercial, Grameen & Coop Banks</div>
+          </div>
+          <button class="daily-action-btn" onclick="handleServiceApplyClick('13', 'Domestic Money Transfer')">
+            <i class="fa-solid fa-paper-plane"></i> Send Money Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Catalog Section -->
+  <section class="section" id="services-catalog">
+    <div class="section-container">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Government & Citizen Services Catalog</h2>
+          <p style="font-size: 13px; color: #64748b; margin-top: 4px;">Delivered directly by authorized Village Level Entrepreneurs (VLEs) backed by MySQL live records.</p>
+        </div>
+        <div style="font-size: 12.5px; color: #0b62a4; font-weight: 600;">
+          All services linked with Instant Wallet Settlement
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="category-tabs">
+        <button class="tab-btn active" data-category="All">All Services (15)</button>
+        <button class="tab-btn" data-category="Financial & Banking">Banking & AEPS</button>
+        <button class="tab-btn" data-category="Bill Payments & BBPS">Recharge & Utility Bills</button>
+        <button class="tab-btn" data-category="G2C Central">Central Govt & Aadhaar</button>
+        <button class="tab-btn" data-category="Health & Insurance">Health & Insurance</button>
+        <button class="tab-btn" data-category="Travel & Transport">Travel & FASTag</button>
+      </div>
+
+      <!-- Dynamic Services Grid (Loaded from MySQL Backend via /api/services) -->
+      <div class="services-grid" id="servicesGrid">
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">
+          Loading services from MySQL database...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- State Government Services Section -->
+  <section class="section" style="background-color: #ffffff; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">State Government Portal Portals & Services</h2>
+        <span style="font-size: 12.5px; color: #64748b;">Select State to access regional services</span>
+      </div>
+
+      <div class="state-grid">
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Delhi</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Uttar Pradesh</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Bihar</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Rajasthan</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Maharashtra</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Madhya Pradesh</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Gujarat</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Haryana</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Punjab</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Karnataka</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> West Bengal</a>
+        <a href="#services-catalog" class="state-chip"><i class="fa-solid fa-building-columns" style="margin-right:6px; color:#0284c7;"></i> Odisha</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- News & VLE Testimonials -->
+  <section class="section">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Latest Announcements & Field Experiences</h2>
+      </div>
+
+      <div class="news-grid">
+        <div class="news-card">
+          <div class="news-date">Advisory Notice</div>
+          <h4>VLEs Beware of Unauthorized Fraudsters</h4>
+          <p>Never share OTP, biometric credentials, or portal passwords with anyone posing as CSC helpdesk staff. Official CSC staff never request wallet transfer PINs.</p>
+          <a href="#" style="font-size: 12.5px; color: #0b62a4; font-weight: 600;">Read Full Advisory &rarr;</a>
+        </div>
+
+        <div class="news-card">
+          <div class="news-date">Operational Update</div>
+          <h4>DigiPay AEPS & Banking Kiosk Integration</h4>
+          <p>All active Kendras are equipped with biometric AEPS cash withdrawal and account opening across national partner banks for seamless citizen delivery.</p>
+          <a href="#daily-services" style="font-size: 12.5px; color: #0b62a4; font-weight: 600;">View Banking Services &rarr;</a>
+        </div>
+
+        <div class="news-card">
+          <div class="news-date">Education & Scheme</div>
+          <h4>PM Vishwakarma Toolkit Verification</h4>
+          <p>Gram Panchayat verification desks are now connected directly through Digital Seva to onboard traditional artisans with subsidized credit loans.</p>
+          <a href="#" style="font-size: 12.5px; color: #0b62a4; font-weight: 600;">View Guidelines &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Official Footer -->
+  <footer class="portal-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <h4>Digital Seva Portal</h4>
+        <p style="font-size: 12.5px; line-height: 1.6; color: #94a3b8; margin-bottom: 12px;">
+          CSC e-Governance Services India Limited is a Special Purpose Vehicle (SPV) incorporated under the Companies Act 1956 to oversee implementation of the CSC scheme.
+        </p>
+        <div style="font-weight: 600; color: #ffffff;">Toll-free Helpdesk: 1800-121-3468</div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Information</h4>
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">CSC Related Sites</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Connect & Portals</h4>
+        <ul class="footer-links">
+          <li><a href="#services-catalog">Digital Services</a></li>
+          <li><a href="#">DigiPay Micro ATM</a></li>
+          <li><a href="https://www.csc.gov.in" target="_blank">CSC Gov Official</a></li>
+          <li><a href="#">CSC SPV Portal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Help & Support</h4>
+        <ul class="footer-links">
+          <li><a href="#">System Requirements</a></li>
+          <li><a href="#">Jaankari Suvidha Portal</a></li>
+          <li><a href="#">Biometric Device Drivers</a></li>
+          <li><a href="#">Grievance Redressal</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2026 CSC e-Governance Services India Limited. Government of India. All Rights Reserved. Role-Based MySQL Powered Platform.
+    </div>
+  </footer>
+
+  <!-- Login Modal with Security Captcha -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Sign In to Digital Seva</h3>
+        <button class="modal-close-btn close-modal-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="loginErrorBox" style="display:none; background:#fee2e2; color:#b91c1c; padding:8px 12px; border-radius:6px; font-size:12.5px; margin-bottom:14px; font-weight:500;"></div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="loginIdentifier">CSC ID / Username / Email</label>
+            <input type="text" id="loginIdentifier" class="form-control" placeholder="e.g. admin@digitalseva.gov.in or CSC982144701" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Security Captcha</label>
+            <div class="captcha-row">
+              <div class="captcha-box" id="captchaDisplay">7A9K2</div>
+              <button type="button" class="btn btn-outline" id="refreshCaptchaBtn" style="padding:6px 10px; font-size:12px;"><i class="fa-solid fa-arrows-rotate"></i></button>
+              <input type="text" id="loginCaptcha" class="form-control" placeholder="Enter captcha" style="text-transform: uppercase;" required>
+            </div>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn btn-accent" style="width: 100%; padding: 12px; font-size: 14px; margin-top: 10px;">
+            Sign In to Portal
+          </button>
+        </form>
+
+
+        <div style="text-align: center; margin-top: 14px; font-size: 12px; color: #64748b; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <i class="fa-solid fa-shield-halved" style="color:#0284c7; margin-right:4px;"></i> <strong>Note:</strong> VLE Operator Onboarding is managed exclusively by Super Admin HQ. Please contact Admin Desk for access.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js?v=20261001"></script>
+  <script src="js/portal.js?v=20261001"></script>
+</body>
+</html>
