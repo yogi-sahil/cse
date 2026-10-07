@@ -1,18 +1,29 @@
 // CSC Digital Seva Portal - Centralized API Client
 
 function resolveApiBase() {
-  // If the page itself is served directly by the backend on port 5000
-  if (window.location.port === '5000') {
-    return `${window.location.origin}/api`;
+  const hostname = (window.location.hostname || "").toLowerCase();
+  const port = window.location.port || "";
+
+  // Check if current page is opened in a local development environment
+  const isLocalHost = hostname === "localhost" ||
+                      hostname === "127.0.0.1" ||
+                      hostname === "0.0.0.0" ||
+                      hostname.endsWith(".local") ||
+                      hostname === "";
+
+  if (isLocalHost) {
+    // If running directly on the Node backend port (5000)
+    if (port === "5000") {
+      return `${window.location.origin}/api`;
+    }
+    // If running via Live Server (5500, 5501), Vite, Python, or file://
+    const localHost = hostname || "127.0.0.1";
+    return `http://${localHost}:5000/api`;
   }
-  
-  // If the page is opened via VS Code Live Server (port 5500, 5501, 5502...), Python (8000), Vite (5173), etc.
-  // We MUST send all API requests to the Node.js backend running on port 5000
-  const host = (window.location.hostname && window.location.hostname !== '') 
-    ? window.location.hostname 
-    : '127.0.0.1';
-    
-  return `http://${host}:5000/api`;
+
+  // Production Environment (e.g. csesewakendra.in or any live domain)
+  // Seamlessly route through the current origin /api
+  return `${window.location.origin}/api`;
 }
 
 const API_BASE = resolveApiBase();

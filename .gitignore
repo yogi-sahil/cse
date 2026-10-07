@@ -5,3 +5,4 @@ backend/.env
 .DS_Store
 *.log
 legacy_nexusflow/
+digital-seva-csc.zip

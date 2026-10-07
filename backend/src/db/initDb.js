@@ -15,24 +15,22 @@ async function initDatabase() {
 
   let serverConn;
   try {
-    // 1. Connect to MySQL Server (no DB selected)
+    // 1. Try to ensure database exists (typical for local development)
     serverConn = await mysql.createConnection({
       host: DB_HOST,
       port: DB_PORT,
       user: DB_USER,
       password: DB_PASSWORD
     });
-
-    console.log(` Connected to MySQL server at ${DB_HOST}:${DB_PORT}`);
-
-    // 2. Create database if it does not exist
     await serverConn.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
-    console.log(` Database '${DB_NAME}' ensured.`);
+    console.log(` Database \'${DB_NAME}\' ensured.`);
   } catch (err) {
-    console.error(' Error connecting to MySQL server:', err.message);
-    throw err;
+    // On shared hosting (Hostinger), database is pre-created and user connects directly
+    console.log(` Notice: Skipping global CREATE DATABASE step (${err.message}). Connecting directly to \'${DB_NAME}\'...`);
   } finally {
-    if (serverConn) await serverConn.end();
+    if (serverConn) {
+      try { await serverConn.end(); } catch (_) {}
+    }
   }
 
   // 3. Connect to the specific database

@@ -93,6 +93,13 @@ async function startServer() {
   const isDbReady = await testConnection();
   if (isDbReady) {
     console.log('✅ MySQL Database connection verified.');
+    try {
+      const initDatabase = require('./db/initDb');
+      await initDatabase();
+      console.log('✅ Database schema and official services initialized.');
+    } catch (dbInitErr) {
+      console.warn('⚠️ Auto-init schema note:', dbInitErr.message);
+    }
   } else {
     console.warn('⚠️ Warning: MySQL database could not be reached. Ensure MySQL is running and run `npm run init-db`');
   }
