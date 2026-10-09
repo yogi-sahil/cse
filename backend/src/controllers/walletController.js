@@ -1,28 +1,42 @@
 const { pool } = require('../config/db');
 
-// Helper to calculate recharge bonus based on tiers
-function calculateBonus(amount) {
+// Helper to dynamically calculate recharge bonus based on DB packages
+async function calculateBonus(amount) {
   const amt = parseFloat(amount) || 0;
   if (amt < 5000) {
     return { percentage: 0, bonus_amount: 0, total_credit: amt };
   }
-  let percentage = 3;
-  if (amt >= 50000) {
-    percentage = 8;
-  } else if (amt >= 25000) {
-    percentage = 7;
-  } else if (amt >= 20000) {
-    percentage = 6;
-  } else if (amt >= 15000) {
-    percentage = 5;
-  } else if (amt >= 10000) {
-    percentage = 4;
-  } else {
-    percentage = 3;
+
+  try {
+    const [packages] = await pool.query(
+      'SELECT amount, bonus_percentage FROM recharge_packages WHERE is_active = 1 ORDER BY amount DESC'
+    );
+
+    let percentage = 5; // default baseline minimum bonus
+    if (packages && packages.length > 0) {
+      const matched = packages.find(p => amt >= parseFloat(p.amount));
+      if (matched) {
+        percentage = parseFloat(matched.bonus_percentage);
+      } else {
+        percentage = parseFloat(packages[packages.length - 1].bonus_percentage);
+      }
+    }
+
+    const bonus_amount = parseFloat(((amt * percentage) / 100).toFixed(2));
+    const total_credit = parseFloat((amt + bonus_amount).toFixed(2));
+    return { percentage, bonus_amount, total_credit };
+  } catch (err) {
+    console.error('Dynamic bonus calculation error:', err);
+    let fallbackPct = 5;
+    if (amt >= 50000) fallbackPct = 16;
+    else if (amt >= 25000) fallbackPct = 13;
+    else if (amt >= 20000) fallbackPct = 11;
+    else if (amt >= 15000) fallbackPct = 9;
+    else if (amt >= 10000) fallbackPct = 7;
+    const bonus_amount = parseFloat(((amt * fallbackPct) / 100).toFixed(2));
+    const total_credit = parseFloat((amt + bonus_amount).toFixed(2));
+    return { percentage: fallbackPct, bonus_amount, total_credit };
   }
-  const bonus_amount = parseFloat(((amt * percentage) / 100).toFixed(2));
-  const total_credit = parseFloat((amt + bonus_amount).toFixed(2));
-  return { percentage, bonus_amount, total_credit };
 }
 
 // Get Wallet Transactions (Role-based: Admin sees all, User sees only own)
@@ -89,7 +103,7 @@ exports.getBalance = async (req, res) => {
 };
 
 // Calculate bonus preview endpoint (for live UI calculator)
-exports.previewBonus = (req, res) => {
+exports.previewBonus = async (req, res) => {
   const { amount } = req.query;
   const amt = parseFloat(amount);
   if (isNaN(amt) || amt < 5000) {
@@ -102,7 +116,7 @@ exports.previewBonus = (req, res) => {
       minimum_required: 5000
     });
   }
-  const calc = calculateBonus(amt);
+  const calc = await calculateBonus(amt);
   return res.json({
     success: true,
     amount: amt,
@@ -150,7 +164,7 @@ exports.requestRecharge = async (req, res) => {
       });
     }
 
-    const { bonus_amount, total_credit, percentage } = calculateBonus(reqAmount);
+    const { bonus_amount, total_credit, percentage } = await calculateBonus(reqAmount);
     const requestNo = `REQ-REC-${Date.now()}`;
 
     const [result] = await pool.query(
@@ -417,5 +431,242 @@ exports.addMoney = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   } finally {
     connection.release();
+  }
+};
+
+
+// ==========================================================================
+// Recharge Packages & Bonus Rates Management (Super Admin & VLE)
+// ==========================================================================
+
+// Get all recharge packages (Active for VLE, All for Admin)
+exports.getPackages = async (req, res) => {
+  try {
+    const isSuperAdmin = req.user && req.user.role === 'admin';
+    let query = 'SELECT * FROM recharge_packages';
+    if (!isSuperAdmin) {
+      query += ' WHERE is_active = 1';
+    }
+    query += ' ORDER BY sort_order ASC, amount ASC';
+
+    const [packages] = await pool.query(query);
+
+    return res.json({
+      success: true,
+      packages: packages.map(p => {
+        const amt = parseFloat(p.amount);
+        const pct = parseFloat(p.bonus_percentage);
+        const bonus = parseFloat(((amt * pct) / 100).toFixed(2));
+        const total = parseFloat((amt + bonus).toFixed(2));
+        return {
+          ...p,
+          amount: amt,
+          bonus_percentage: pct,
+          bonus_amount: bonus,
+          total_credit: total,
+          is_popular: Boolean(p.is_popular),
+          is_active: Boolean(p.is_active)
+        };
+      })
+    });
+  } catch (error) {
+    console.error('Error fetching recharge packages:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: Create new recharge package
+exports.createPackage = async (req, res) => {
+  try {
+    const { amount, bonus_percentage, tag, badge_style, is_popular, is_active, sort_order } = req.body;
+    const numAmount = parseFloat(amount);
+    const numBonus = parseFloat(bonus_percentage);
+
+    if (isNaN(numAmount) || numAmount < 1000) {
+      return res.status(400).json({ success: false, message: 'Valid package amount is required (min ₹1,000).' });
+    }
+    if (isNaN(numBonus) || numBonus < 0) {
+      return res.status(400).json({ success: false, message: 'Valid bonus percentage (>= 0%) is required.' });
+    }
+
+    const [result] = await pool.query(
+      `INSERT INTO recharge_packages (amount, bonus_percentage, tag, badge_style, is_popular, is_active, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        numAmount,
+        numBonus,
+        tag ? tag.trim() : null,
+        badge_style || 'default',
+        is_popular ? 1 : 0,
+        is_active !== undefined ? (is_active ? 1 : 0) : 1,
+        parseInt(sort_order, 10) || 0
+      ]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: `Recharge package for ₹${numAmount.toLocaleString('en-IN')} with ${numBonus}% bonus created successfully!`,
+      packageId: result.insertId
+    });
+  } catch (error) {
+    console.error('Error creating recharge package:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: Update existing recharge package
+exports.updatePackage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, bonus_percentage, tag, badge_style, is_popular, is_active, sort_order } = req.body;
+
+    const [existing] = await pool.query('SELECT id FROM recharge_packages WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Recharge package not found.' });
+    }
+
+    const numAmount = parseFloat(amount);
+    const numBonus = parseFloat(bonus_percentage);
+
+    if (isNaN(numAmount) || numAmount < 1000) {
+      return res.status(400).json({ success: false, message: 'Valid package amount is required.' });
+    }
+    if (isNaN(numBonus) || numBonus < 0) {
+      return res.status(400).json({ success: false, message: 'Valid bonus percentage is required.' });
+    }
+
+    await pool.query(
+      `UPDATE recharge_packages 
+       SET amount = ?, bonus_percentage = ?, tag = ?, badge_style = ?, is_popular = ?, is_active = ?, sort_order = ?
+       WHERE id = ?`,
+      [
+        numAmount,
+        numBonus,
+        tag ? tag.trim() : null,
+        badge_style || 'default',
+        is_popular ? 1 : 0,
+        is_active ? 1 : 0,
+        parseInt(sort_order, 10) || 0,
+        id
+      ]
+    );
+
+    return res.json({
+      success: true,
+      message: 'Recharge package and bonus rate updated successfully!'
+    });
+  } catch (error) {
+    console.error('Error updating recharge package:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: Delete recharge package
+exports.deletePackage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM recharge_packages WHERE id = ?', [id]);
+    return res.json({
+      success: true,
+      message: 'Recharge package deleted successfully!'
+    });
+  } catch (error) {
+    console.error('Error deleting package:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================================================
+// CSC Central Settlement Account Settings (Admin Can Update Payment Details)
+// ==========================================================================
+
+// Get current settlement account details
+exports.getSettlementAccount = async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM settlement_settings ORDER BY id ASC LIMIT 1');
+    if (rows.length === 0) {
+      return res.json({
+        success: true,
+        settlement: {
+          account_holder: 'CSC e-Governance Services India Limited',
+          bank_name: 'State Bank of India (SBI)',
+          account_number: '392810482910',
+          ifsc_code: 'SBIN0001234',
+          branch_name: 'Parliament Street HQ, New Delhi',
+          upi_id: 'csc.spv.settle@sbi',
+          qr_code_url: '',
+          instructions: 'Transfer funds using your mobile banking or UPI app, then submit the 12-digit UTR or Reference Number below for Admin verification.'
+        }
+      });
+    }
+    return res.json({
+      success: true,
+      settlement: rows[0]
+    });
+  } catch (error) {
+    console.error('Error fetching settlement account:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: Update CSC Central Settlement Account Details
+exports.updateSettlementAccount = async (req, res) => {
+  try {
+    const { account_holder, bank_name, account_number, ifsc_code, branch_name, upi_id, qr_code_url, instructions } = req.body;
+
+    if (!bank_name || !account_number || !ifsc_code || !upi_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bank Name, Account Number, IFSC Code, and UPI ID are required.'
+      });
+    }
+
+    const [existing] = await pool.query('SELECT id FROM settlement_settings LIMIT 1');
+    if (existing.length === 0) {
+      await pool.query(
+        `INSERT INTO settlement_settings 
+         (account_holder, bank_name, account_number, ifsc_code, branch_name, upi_id, qr_code_url, instructions, updated_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          account_holder || 'CSC e-Governance Services India Limited',
+          bank_name.trim(),
+          account_number.trim(),
+          ifsc_code.trim().toUpperCase(),
+          branch_name ? branch_name.trim() : null,
+          upi_id.trim().toLowerCase(),
+          qr_code_url ? qr_code_url.trim() : null,
+          instructions ? instructions.trim() : null,
+          req.user.id
+        ]
+      );
+    } else {
+      await pool.query(
+        `UPDATE settlement_settings 
+         SET account_holder = ?, bank_name = ?, account_number = ?, ifsc_code = ?, branch_name = ?, upi_id = ?, qr_code_url = ?, instructions = ?, updated_by = ?
+         WHERE id = ?`,
+        [
+          account_holder || 'CSC e-Governance Services India Limited',
+          bank_name.trim(),
+          account_number.trim(),
+          ifsc_code.trim().toUpperCase(),
+          branch_name ? branch_name.trim() : null,
+          upi_id.trim().toLowerCase(),
+          qr_code_url ? qr_code_url.trim() : null,
+          instructions ? instructions.trim() : null,
+          req.user.id,
+          existing[0].id
+        ]
+      );
+    }
+
+    const [updated] = await pool.query('SELECT * FROM settlement_settings ORDER BY id ASC LIMIT 1');
+    return res.json({
+      success: true,
+      message: 'CSC Central Settlement Account Details updated successfully! VLEs will now transfer payments to these updated details.',
+      settlement: updated[0]
+    });
+  } catch (error) {
+    console.error('Error updating settlement account:', error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -114,3 +114,32 @@ CREATE TABLE IF NOT EXISTS wallet_recharge_requests (
   INDEX idx_req_status (status),
   CONSTRAINT fk_req_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS recharge_packages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  amount DECIMAL(12, 2) NOT NULL,
+  bonus_percentage DECIMAL(5, 2) NOT NULL DEFAULT 0.00,
+  tag VARCHAR(100) DEFAULT NULL,
+  badge_style VARCHAR(50) DEFAULT 'default',
+  is_popular BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS settlement_settings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  account_holder VARCHAR(200) NOT NULL DEFAULT 'CSC e-Governance Services India Limited',
+  bank_name VARCHAR(200) NOT NULL DEFAULT 'State Bank of India (SBI)',
+  account_number VARCHAR(100) NOT NULL DEFAULT '392810482910',
+  ifsc_code VARCHAR(50) NOT NULL DEFAULT 'SBIN0001234',
+  branch_name VARCHAR(200) DEFAULT 'Parliament Street HQ, New Delhi',
+  upi_id VARCHAR(100) NOT NULL DEFAULT 'csc.spv.settle@sbi',
+  qr_code_url VARCHAR(500) DEFAULT NULL,
+  instructions TEXT DEFAULT NULL,
+  updated_by INT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

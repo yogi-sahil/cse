@@ -226,6 +226,35 @@ const API = {
         method: 'POST',
         body: JSON.stringify({ amount, payment_method: paymentMethod, user_id: userId })
       });
+    },
+    getPackages() {
+      return API.request('/wallet/packages');
+    },
+    createPackage(data) {
+      return API.request('/wallet/packages', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
+    updatePackage(id, data) {
+      return API.request(`/wallet/packages/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+    },
+    deletePackage(id) {
+      return API.request(`/wallet/packages/${id}`, {
+        method: 'DELETE'
+      });
+    },
+    getSettlementAccount() {
+      return API.request('/wallet/settlement-account');
+    },
+    updateSettlementAccount(data) {
+      return API.request('/wallet/settlement-account', {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
     }
   },
 

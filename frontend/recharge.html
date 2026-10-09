@@ -6,6 +6,8 @@
   <title>Recharge Requests - Digital Seva Portal</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/panel.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" href="favicon.ico">
 </head>
 <body data-page="recharge">
 
@@ -242,14 +244,36 @@
         <div class="panel-view" id="view-recharge_requests" style="display: block;">
           <div class="view-header">
             <div class="view-title-group">
-              <h2>VLE Wallet Recharge Requests</h2>
-              <p>Super Admin control: Review, verify, and approve operator wallet top-up requests with automated bonus calculation.</p>
+              <h2>CSC Recharge & Settlement Control Center</h2>
+              <p>Super Admin control: Review operator recharge requests, manage dynamic bonus credit packages, and update CSC settlement bank details.</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <button class="btn btn-outline" onclick="loadRechargeRequests()"><i class="fa-solid fa-arrows-rotate" style="margin-right:4px;"></i> Refresh Requests</button>
+              <button class="btn btn-outline" onclick="switchAdminRechargeSection('settlement')"><i class="fa-solid fa-building-columns" style="margin-right:4px; color:#0284c7;"></i> Update Settlement Account</button>
+              <button class="btn btn-primary" onclick="openNewPackageModal()"><i class="fa-solid fa-gift" style="margin-right:4px;"></i> + New Bonus Package</button>
               <button class="btn btn-accent" onclick="openDirectAdjustModal()"><i class="fa-solid fa-hand-holding-dollar" style="margin-right:4px;"></i> Add / Edit VLE Balance</button>
             </div>
           </div>
+
+          <!-- Super Admin Recharge Section Navigation -->
+          <div class="admin-section-nav" id="adminRechargeSubNav">
+            <button class="admin-section-nav-btn active" id="subnav-requests" onclick="switchAdminRechargeSection('requests', this)">
+              <i class="fa-solid fa-list-check"></i>
+              <span>VLE Recharge Requests</span>
+              <span class="nav-tag" id="subnavCountRequests">0</span>
+            </button>
+            <button class="admin-section-nav-btn" id="subnav-packages" onclick="switchAdminRechargeSection('packages', this)">
+              <i class="fa-solid fa-gift" style="color: #16a34a;"></i>
+              <span>Manage Bonus Packages & Tiers</span>
+              <span class="nav-tag" id="subnavCountPackages">6</span>
+            </button>
+            <button class="admin-section-nav-btn" id="subnav-settlement" onclick="switchAdminRechargeSection('settlement', this)">
+              <i class="fa-solid fa-building-columns" style="color: #0284c7;"></i>
+              <span>CSC Central Settlement Account</span>
+            </button>
+          </div>
+
+          <!-- SECTION 1: Recharge Requests List -->
+          <div id="sec-recharge-requests">
 
           <!-- Mini Telemetry Strip -->
           <div class="vle-metric-strip">
@@ -339,6 +363,181 @@
               </div>
             </div>
           </div>
+          </div>
+          <!-- END SECTION 1: Recharge Requests -->
+
+          <!-- SECTION 2: Manage Bonus Packages & Tiers -->
+          <div id="sec-recharge-packages" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 style="font-size: 16px; color: var(--text-heading); margin: 0 0 4px 0;">
+                  <i class="fa-solid fa-gift" style="color: #16a34a; margin-right: 6px;"></i> Active Recharge Packages & Bonus Rates
+                </h3>
+                <p style="font-size: 12.5px; color: var(--text-muted); margin: 0;">
+                  Super Admin can increase or edit bonus credit percentages and tags for each recharge package. VLE operators receive this bonus upon wallet recharge.
+                </p>
+              </div>
+              <button class="btn btn-primary" onclick="openNewPackageModal()">
+                <i class="fa-solid fa-plus" style="margin-right: 4px;"></i> Add New Package Tier
+              </button>
+            </div>
+
+            <!-- Package Telemetry -->
+            <div class="vle-metric-strip" style="margin-bottom: 20px;">
+              <div class="vle-stat-card">
+                <span class="vle-stat-label">Active Packages</span>
+                <span class="vle-stat-val green" id="pkgStatCount">6</span>
+                <span class="vle-stat-trend green">Live on VLE Portal</span>
+              </div>
+              <div class="vle-stat-card">
+                <span class="vle-stat-label">Maximum Bonus Tier</span>
+                <span class="vle-stat-val blue" id="pkgStatMaxBonus">16%</span>
+                <span class="vle-stat-trend">High-incentive Tier</span>
+              </div>
+              <div class="vle-stat-card">
+                <span class="vle-stat-label">Minimum Package</span>
+                <span class="vle-stat-val" id="pkgStatMinAmt">₹5,000</span>
+                <span class="vle-stat-trend">Baseline Starter</span>
+              </div>
+              <div class="vle-stat-card">
+                <span class="vle-stat-label">Average Bonus Credit</span>
+                <span class="vle-stat-val orange" id="pkgStatAvgBonus">10.2%</span>
+                <span class="vle-stat-trend">Across All Tiers</span>
+              </div>
+            </div>
+
+            <!-- Packages Table -->
+            <div class="table-card">
+              <div style="overflow-x: auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 60px;">Order</th>
+                      <th>Package Amount</th>
+                      <th>Bonus Rate</th>
+                      <th>Calculated Bonus</th>
+                      <th>Total Credited</th>
+                      <th>Promotional Tag</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Admin Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminPackagesTableBody">
+                    <tr><td colspan="8" style="text-align: center; padding: 24px;">Loading recharge packages...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- END SECTION 2: Manage Bonus Packages -->
+
+          <!-- SECTION 3: CSC Central Settlement Account Settings -->
+          <div id="sec-recharge-settlement" style="display: none;">
+            <div style="margin-bottom: 18px;">
+              <h3 style="font-size: 16px; color: var(--text-heading); margin: 0 0 4px 0;">
+                <i class="fa-solid fa-building-columns" style="color: #0284c7; margin-right: 6px;"></i> CSC Central Settlement Account Settings
+              </h3>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin: 0;">
+                These bank and settlement details are displayed to all VLE operators when requesting wallet recharges. Update these details whenever you want payments sent to a different account.
+              </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px;">
+              <!-- Edit Settlement Form -->
+              <div class="settlement-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                  <h4 style="margin: 0; font-size: 14.5px; color: var(--text-heading);">
+                    <i class="fa-solid fa-pen-to-square" style="color: var(--csc-blue-600); margin-right: 6px;"></i> Edit Settlement Payment Account
+                  </h4>
+                  <span class="badge badge-active"><i class="fa-solid fa-circle-check"></i> Live On Portal</span>
+                </div>
+
+                <form id="adminSettlementForm" onsubmit="handleSaveSettlementForm(event)">
+                  <div class="settlement-grid">
+                    <div class="form-group">
+                      <label class="form-label" for="settleAccountHolder">Account Beneficiary / Entity Name *</label>
+                      <input type="text" id="settleAccountHolder" class="form-control" required placeholder="e.g. CSC e-Governance Services India Limited">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="settleUpiId">Official Settlement UPI ID *</label>
+                      <input type="text" id="settleUpiId" class="form-control" required placeholder="e.g. csc.spv.settle@sbi">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="settleBankName">Bank Name *</label>
+                      <input type="text" id="settleBankName" class="form-control" required placeholder="e.g. State Bank of India (SBI)">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="settleAccountNumber">Settlement Bank Account Number *</label>
+                      <input type="text" id="settleAccountNumber" class="form-control" required placeholder="e.g. 392810482910">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="settleIfscCode">Bank IFSC Code *</label>
+                      <input type="text" id="settleIfscCode" class="form-control" required placeholder="e.g. SBIN0001234" style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="settleBranchName">Bank Branch & City</label>
+                      <input type="text" id="settleBranchName" class="form-control" placeholder="e.g. Parliament Street HQ, New Delhi">
+                    </div>
+                  </div>
+
+                  <div class="form-group" style="margin-top: 14px;">
+                    <label class="form-label" for="settleInstructions">Payment Instructions for VLE Remitters</label>
+                    <textarea id="settleInstructions" class="form-control" rows="3" placeholder="Transfer funds via UPI/IMPS/NEFT and paste the 12-digit UTR below for instant admin verification..."></textarea>
+                  </div>
+
+                  <div style="display: flex; gap: 12px; margin-top: 20px; align-items: center;">
+                    <button type="submit" id="saveSettlementBtn" class="btn btn-accent" style="padding: 11px 22px; font-weight: 700;">
+                      <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i> Save Settlement Account Details
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="loadAdminSettlementAccount()">
+                      <i class="fa-solid fa-rotate-left" style="margin-right: 4px;"></i> Reset
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Live VLE Preview Box -->
+              <div>
+                <div style="font-weight: 700; font-size: 13px; color: var(--text-heading); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-eye" style="color: var(--csc-blue-600);"></i> Live VLE Preview (How VLEs see it)
+                </div>
+                <div class="csc-payment-details-box" id="adminSettlementPreviewBox" style="margin-top: 0;">
+                  <div style="font-weight: 700; font-size: 12.5px; color: #0f172a; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span><i class="fa-solid fa-building-columns" style="color:#0284c7; margin-right:4px;"></i> CSC Central Settlement Account Details:</span>
+                    <span style="font-size: 11px; color: #16a34a; font-weight: 600;">Verified SPV</span>
+                  </div>
+                  <div class="payment-detail-item">
+                    <span>Beneficiary:</span>
+                    <strong id="prevAccountHolder">CSC e-Governance Services India Limited</strong>
+                  </div>
+                  <div class="payment-detail-item">
+                    <span>Official UPI ID:</span>
+                    <code class="copyable" id="prevUpiId">csc.spv.settle@sbi <i class="fa-regular fa-copy"></i></code>
+                  </div>
+                  <div class="payment-detail-item">
+                    <span>Bank Name:</span>
+                    <strong id="prevBankName">State Bank of India (SBI)</strong>
+                  </div>
+                  <div class="payment-detail-item">
+                    <span>Account Number:</span>
+                    <code class="copyable" id="prevAccountNumber">392810482910 <i class="fa-regular fa-copy"></i></code>
+                  </div>
+                  <div class="payment-detail-item">
+                    <span>IFSC Code:</span>
+                    <code class="copyable" id="prevIfscCode">SBIN0001234 <i class="fa-regular fa-copy"></i></code>
+                  </div>
+                  <div class="payment-detail-item" id="prevBranchWrap">
+                    <span>Branch:</span>
+                    <span id="prevBranchName">Parliament Street HQ, New Delhi</span>
+                  </div>
+                  <div style="font-size: 11px; color: #64748b; margin-top: 6px; line-height: 1.4;" id="prevInstructions">
+                    * Transfer funds using your mobile banking / UPI app, then submit the 12-digit UTR or Reference Number below for Admin verification.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- END SECTION 3: Settlement Settings -->
         </div>
 
         <!-- 5. VLE MANAGEMENT VIEW (SUPER ADMIN ONLY) -->
@@ -1161,5 +1360,88 @@
   <!-- Scripts -->
   <script src="js/api.js?v=20261002"></script>
   <script src="js/panel.js?v=20261002"></script>
+
+  <!-- MODAL: Super Admin Add / Edit Recharge Package -->
+  <div class="modal-overlay" id="packageEditModal">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3 id="packageModalTitle"><i class="fa-solid fa-gift" style="color:#16a34a; margin-right:6px;"></i> Add Recharge Package Tier</h3>
+        <button class="modal-close-btn close-panel-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px 24px;">
+        <form id="packageEditForm" onsubmit="handleSavePackageForm(event)">
+          <input type="hidden" id="editPackageId" value="">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="pkgAmountInput">Package Amount (₹) *</label>
+              <input type="number" id="pkgAmountInput" class="form-control" min="1000" step="500" required placeholder="e.g. 10000" oninput="updatePackageModalPreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pkgBonusPctInput">Bonus Percentage (%) *</label>
+              <input type="number" id="pkgBonusPctInput" class="form-control" min="0" max="100" step="0.5" required placeholder="e.g. 7.5" oninput="updatePackageModalPreview()">
+            </div>
+          </div>
+
+          <!-- Live Preview Calc -->
+          <div class="bonus-calc-card" style="margin: 14px 0 16px 0; padding: 12px 14px;">
+            <div class="bonus-calc-row">
+              <span class="bonus-calc-label">Base Recharge Capital:</span>
+              <span class="bonus-calc-val" id="pkgModalPreviewBase">₹10,000.00</span>
+            </div>
+            <div class="bonus-calc-row">
+              <span class="bonus-calc-label">Promotional Bonus Added (<span id="pkgModalPreviewRate">7%</span>):</span>
+              <span class="bonus-calc-val text-green" id="pkgModalPreviewBonus">+₹700.00</span>
+            </div>
+            <div class="bonus-calc-divider"></div>
+            <div class="bonus-calc-row total">
+              <span class="bonus-calc-label">Total Credited to Wallet:</span>
+              <span class="bonus-calc-val text-blue" id="pkgModalPreviewTotal">₹10,700.00</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 14px;">
+            <div class="form-group">
+              <label class="form-label" for="pkgTagInput">Promotional Tag (Optional)</label>
+              <input type="text" id="pkgTagInput" class="form-control" placeholder="e.g. Popular Choice ⭐ or VIP 🚀">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pkgBadgeStyleSelect">Badge Highlight Style</label>
+              <select id="pkgBadgeStyleSelect" class="form-control">
+                <option value="default">Default Blue</option>
+                <option value="highlight">Highlight Cyan</option>
+                <option value="highlight-gold">Gold Premium 🌟</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="pkgSortOrderInput">Display Sort Order</label>
+              <input type="number" id="pkgSortOrderInput" class="form-control" value="1" min="0" step="1">
+            </div>
+            <div class="form-group" style="display: flex; flex-direction: column; justify-content: center; margin-top: 14px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                <input type="checkbox" id="pkgIsActiveCheckbox" checked style="width: 16px; height: 16px;">
+                <span>Active on VLE Portal</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; margin-top: 6px;">
+                <input type="checkbox" id="pkgIsPopularCheckbox" style="width: 16px; height: 16px;">
+                <span>Mark as Popular Choice</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-outline close-panel-modal">Cancel</button>
+            <button type="submit" id="savePackageSubmitBtn" class="btn btn-primary" style="padding: 10px 20px;">
+              <i class="fa-solid fa-check" style="margin-right: 4px;"></i> Save Package
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

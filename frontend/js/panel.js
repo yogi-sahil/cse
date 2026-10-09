@@ -58,8 +58,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       await loadWalletTransactions();
       if (currentUser.role !== 'admin') await loadMyRechargeRequests();
     } else if (currentPage === 'recharge' || currentPage === 'recharge_requests') {
-      if (currentUser.role === 'admin') await loadRechargeRequests();
-      else await loadMyRechargeRequests();
+      if (currentUser.role === 'admin') {
+        await loadRechargeRequests();
+        await loadAdminRechargePackages();
+        await loadAdminSettlementAccount();
+      } else {
+        await loadMyRechargeRequests();
+      }
+      await ensureRechargeDataLoaded();
     } else if (currentPage === 'vles') {
       if (currentUser.role === 'admin') await loadVLEList();
     } else if (currentPage === 'service_manager') {
@@ -74,6 +80,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!currentServices || currentServices.length === 0) {
       loadServicesCatalog().catch(() => {});
     }
+
+    // Pre-cache dynamic recharge packages and settlement account details
+    ensureRechargeDataLoaded().catch(() => {});
 
     // Check if URL has ?apply=serviceId
     const urlParams = new URLSearchParams(window.location.search);
@@ -512,6 +521,9 @@ function setupNavigation() {
         if (modal) {
           modal.classList.add('active');
           const amt = parseFloat(document.getElementById('rechargeAmountInput')?.value) || 5000;
+          ensureRechargeDataLoaded().then(() => {
+            updateRechargeBonusCalc(amt);
+          });
           updateRechargeBonusCalc(amt);
         }
       }
@@ -590,18 +602,25 @@ async function loadInitialData() {
 async function loadDashboardStats() {
   try {
     const data = await API.stats.getDashboard();
-    const stats = data.stats;
-    const isSuperAdmin = currentUser.role === 'admin';
+    const stats = (data && data.stats) || {};
+    const isSuperAdmin = currentUser && currentUser.role === 'admin';
 
     const kpiContainer = document.getElementById('dashboardKpis');
     if (kpiContainer) {
       if (isSuperAdmin) {
+        const totalVles = Number(stats.total_vles) || 0;
+        const activeVles = Number(stats.active_vles) || 0;
+        const totalApps = Number(stats.total_applications) || 0;
+        const pendingApps = Number(stats.pending_applications) || 0;
+        const totalWallet = Number(stats.total_network_wallet) || 0;
+        const totalComm = Number(stats.total_commission_disbursed) || 0;
+
         kpiContainer.innerHTML = `
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">Total Registered VLEs</span>
-              <span class="kpi-value">${stats.total_vles}</span>
-              <span style="font-size: 11px; color: #16a34a; font-weight: 600;">${stats.active_vles} Active Centres</span>
+              <span class="kpi-value">${totalVles.toLocaleString('en-IN')}</span>
+              <span style="font-size: 11px; color: #16a34a; font-weight: 600;">${activeVles} Active Centres</span>
             </div>
             <div class="kpi-icon-wrap icon-blue"><i class="fa-solid fa-users"></i></div>
           </div>
@@ -609,8 +628,8 @@ async function loadDashboardStats() {
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">Network Applications</span>
-              <span class="kpi-value">${stats.total_applications}</span>
-              <span style="font-size: 11px; color: #ea580c; font-weight: 600;">${stats.pending_applications} Pending Action</span>
+              <span class="kpi-value">${totalApps.toLocaleString('en-IN')}</span>
+              <span style="font-size: 11px; color: #ea580c; font-weight: 600;">${pendingApps} Pending Action</span>
             </div>
             <div class="kpi-icon-wrap icon-orange"><i class="fa-solid fa-file-invoice"></i></div>
           </div>
@@ -618,7 +637,7 @@ async function loadDashboardStats() {
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">Network Wallet Holding</span>
-              <span class="kpi-value">₹${stats.total_network_wallet.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span class="kpi-value">₹${totalWallet.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               <span style="font-size: 11px; color: #64748b;">VLE Deposited Capital</span>
             </div>
             <div class="kpi-icon-wrap icon-green"><i class="fa-solid fa-wallet"></i></div>
@@ -627,18 +646,24 @@ async function loadDashboardStats() {
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">Total Commission Disbursed</span>
-              <span class="kpi-value">₹${stats.total_commission_disbursed.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span class="kpi-value">₹${totalComm.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               <span style="font-size: 11px; color: #16a34a; font-weight: 600;">Paid to VLE Network</span>
             </div>
             <div class="kpi-icon-wrap icon-purple"><i class="fa-solid fa-chart-line"></i></div>
           </div>
         `;
       } else {
+        const walletBal = Number(stats.wallet_balance) || 0;
+        const totalApps = Number(stats.total_applications) || 0;
+        const pendingApps = Number(stats.pending_applications) || 0;
+        const totalComm = Number(stats.total_commission_earned) || 0;
+        const completedApps = Number(stats.completed_applications) || 0;
+
         kpiContainer.innerHTML = `
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">My Wallet Balance</span>
-              <span class="kpi-value">₹${stats.wallet_balance.toFixed(2)}</span>
+              <span class="kpi-value">₹${walletBal.toFixed(2)}</span>
               <span style="font-size: 11px; color: #16a34a; font-weight: 600;">Live Available Balance</span>
             </div>
             <div class="kpi-icon-wrap icon-green"><i class="fa-solid fa-wallet"></i></div>
@@ -647,8 +672,8 @@ async function loadDashboardStats() {
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">My Citizen Applications</span>
-              <span class="kpi-value">${stats.total_applications}</span>
-              <span style="font-size: 11px; color: #ea580c; font-weight: 600;">${stats.pending_applications} Under Processing</span>
+              <span class="kpi-value">${totalApps}</span>
+              <span style="font-size: 11px; color: #ea580c; font-weight: 600;">${pendingApps} Under Processing</span>
             </div>
             <div class="kpi-icon-wrap icon-blue"><i class="fa-solid fa-file-lines"></i></div>
           </div>
@@ -656,7 +681,7 @@ async function loadDashboardStats() {
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">Total Commission Earned</span>
-              <span class="kpi-value">₹${stats.total_commission_earned.toFixed(2)}</span>
+              <span class="kpi-value">₹${totalComm.toFixed(2)}</span>
               <span style="font-size: 11px; color: #16a34a; font-weight: 600;">Credited to Wallet</span>
             </div>
             <div class="kpi-icon-wrap icon-purple"><i class="fa-solid fa-indian-rupee-sign"></i></div>
@@ -665,7 +690,7 @@ async function loadDashboardStats() {
           <div class="kpi-card">
             <div class="kpi-data">
               <span class="kpi-title">Completed Applications</span>
-              <span class="kpi-value">${stats.completed_applications}</span>
+              <span class="kpi-value">${completedApps}</span>
               <span style="font-size: 11px; color: #0284c7; font-weight: 600;">Successfully Delivered</span>
             </div>
             <div class="kpi-icon-wrap icon-orange"><i class="fa-solid fa-circle-check"></i></div>
@@ -685,7 +710,8 @@ async function loadDashboardStats() {
 function renderDashboardAnalytics(stats, categoryBreakdown, topServices) {
   const chart1 = document.getElementById('categoryChartContainer');
   const chart2 = document.getElementById('statusPipelineContainer');
-  const isSuperAdmin = currentUser.role === 'admin';
+  const isSuperAdmin = currentUser && currentUser.role === 'admin';
+  const safeStats = stats || {};
 
   if (chart1) {
     const list = isSuperAdmin ? categoryBreakdown : topServices;
@@ -713,9 +739,9 @@ function renderDashboardAnalytics(stats, categoryBreakdown, topServices) {
   }
 
   if (chart2) {
-    const total = stats.total_applications || 1;
-    const pending = stats.pending_applications || 0;
-    const approvedOrCompleted = (stats.completed_applications || 0) + (stats.approved_applications || 0);
+    const total = Number(safeStats.total_applications) || 1;
+    const pending = Number(safeStats.pending_applications) || 0;
+    const approvedOrCompleted = (Number(safeStats.completed_applications) || 0) + (Number(safeStats.approved_applications) || 0);
     const pendingPct = Math.round((pending / total) * 100) || 0;
     const completedPct = Math.round((approvedOrCompleted / total) * 100) || 0;
 
@@ -2727,21 +2753,166 @@ function handleRechargeAmountChange() {
   updateRechargeBonusCalc(amt);
 }
 
+// Dynamic Bonus Calculation against Live DB Packages
+window.liveRechargePackages = [];
+window.liveSettlementAccount = null;
+
+async function ensureRechargeDataLoaded() {
+  try {
+    const promises = [];
+    if (!window.liveRechargePackages || window.liveRechargePackages.length === 0) {
+      promises.push(
+        API.wallet.getPackages().then(res => {
+          if (res && res.packages) {
+            window.liveRechargePackages = res.packages;
+            renderDynamicRechargePresets();
+          }
+        }).catch(err => console.warn('Could not load packages:', err))
+      );
+    }
+    if (!window.liveSettlementAccount) {
+      promises.push(
+        API.wallet.getSettlementAccount().then(res => {
+          if (res && res.settlement) {
+            window.liveSettlementAccount = res.settlement;
+            renderDynamicSettlementBox();
+          }
+        }).catch(err => console.warn('Could not load settlement account:', err))
+      );
+    }
+    await Promise.all(promises);
+  } catch (err) {
+    console.error('Error ensuring recharge data:', err);
+  }
+}
+
+function renderDynamicRechargePresets(selectedAmt) {
+  const grid = document.getElementById('rechargePresetsGrid');
+  if (!grid) return;
+
+  const pkgs = (window.liveRechargePackages && window.liveRechargePackages.length > 0)
+    ? window.liveRechargePackages.filter(p => p.is_active !== false)
+    : [
+        { amount: 5000, bonus_percentage: 5, bonus_amount: 250, total_credit: 5250, tag: 'Starter Booster', badge_style: 'default', is_popular: false },
+        { amount: 10000, bonus_percentage: 7, bonus_amount: 700, total_credit: 10700, tag: 'Popular Choice ⭐', badge_style: 'highlight', is_popular: true },
+        { amount: 15000, bonus_percentage: 9, bonus_amount: 1350, total_credit: 16350, tag: 'Growth Booster', badge_style: 'default', is_popular: false },
+        { amount: 20000, bonus_percentage: 11, bonus_amount: 2200, total_credit: 22200, tag: 'High Volume', badge_style: 'default', is_popular: false },
+        { amount: 25000, bonus_percentage: 13, bonus_amount: 3250, total_credit: 28250, tag: 'Mega Merchant 🌟', badge_style: 'default', is_popular: false },
+        { amount: 50000, bonus_percentage: 16, bonus_amount: 8000, total_credit: 58000, tag: 'CSC Enterprise VIP 🚀', badge_style: 'highlight-gold', is_popular: false }
+      ];
+
+  const currentVal = selectedAmt !== undefined ? selectedAmt : (parseFloat(document.getElementById('rechargeAmountInput')?.value) || (pkgs[0] ? pkgs[0].amount : 5000));
+
+  grid.innerHTML = pkgs.map(p => {
+    const isSelected = p.amount === currentVal;
+    let badgeClass = 'preset-bonus';
+    if (p.badge_style === 'highlight' || p.is_popular) badgeClass += ' highlight';
+    if (p.badge_style === 'highlight-gold') badgeClass += ' highlight-gold';
+
+    return `
+      <div class="recharge-preset-card ${isSelected ? 'active' : ''}" data-amount="${p.amount}" onclick="selectRechargePreset(${p.amount}, this)">
+        <div class="preset-amt">₹${Number(p.amount).toLocaleString('en-IN')}</div>
+        <div class="${badgeClass}">
+          +₹${Number(p.bonus_amount).toLocaleString('en-IN')} Bonus (${p.bonus_percentage}%)
+          ${p.tag ? `<span style="font-size: 10px; margin-left: 2px;">• ${escapeHtml(p.tag)}</span>` : ''}
+        </div>
+        <div class="preset-total">Total: ₹${Number(p.total_credit).toLocaleString('en-IN')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDynamicSettlementBox() {
+  const acc = window.liveSettlementAccount;
+  if (!acc) return;
+
+  document.querySelectorAll('.csc-payment-details-box').forEach(box => {
+    if (box.id === 'adminSettlementPreviewBox') {
+      const hEl = document.getElementById('prevAccountHolder');
+      const uEl = document.getElementById('prevUpiId');
+      const bEl = document.getElementById('prevBankName');
+      const aEl = document.getElementById('prevAccountNumber');
+      const iEl = document.getElementById('prevIfscCode');
+      const brEl = document.getElementById('prevBranchName');
+      const insEl = document.getElementById('prevInstructions');
+      if (hEl) hEl.innerText = acc.account_holder || 'CSC e-Governance Services India Limited';
+      if (uEl) uEl.innerHTML = `${escapeHtml(acc.upi_id)} <i class="fa-regular fa-copy"></i>`;
+      if (bEl) bEl.innerText = acc.bank_name || 'State Bank of India (SBI)';
+      if (aEl) aEl.innerHTML = `${escapeHtml(acc.account_number)} <i class="fa-regular fa-copy"></i>`;
+      if (iEl) iEl.innerHTML = `${escapeHtml(acc.ifsc_code)} <i class="fa-regular fa-copy"></i>`;
+      if (brEl) brEl.innerText = acc.branch_name || 'Parliament Street HQ, New Delhi';
+      if (insEl) insEl.innerText = acc.instructions || '* Transfer funds using your mobile banking / UPI app, then submit the 12-digit UTR below for Admin verification.';
+      return;
+    }
+
+    box.innerHTML = `
+      <div style="font-weight: 700; font-size: 12.5px; color: #0f172a; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="fa-solid fa-building-columns" style="color:#0284c7; margin-right:4px;"></i> CSC Central Settlement Account Details:</span>
+        <span style="font-size: 11px; color: #16a34a; font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> Verified SPV</span>
+      </div>
+      <div class="payment-detail-item">
+        <span>Beneficiary:</span>
+        <strong>${escapeHtml(acc.account_holder || 'CSC e-Governance Services India Limited')}</strong>
+      </div>
+      <div class="payment-detail-item">
+        <span>Official UPI ID:</span>
+        <code class="copyable" onclick="copyToClipboard('${escapeHtml(acc.upi_id)}', 'UPI ID')">${escapeHtml(acc.upi_id)} <i class="fa-regular fa-copy"></i></code>
+      </div>
+      <div class="payment-detail-item">
+        <span>Bank Name:</span>
+        <strong>${escapeHtml(acc.bank_name)}</strong>
+      </div>
+      <div class="payment-detail-item">
+        <span>Account Number:</span>
+        <code class="copyable" onclick="copyToClipboard('${escapeHtml(acc.account_number)}', 'Bank Account Number')">${escapeHtml(acc.account_number)} <i class="fa-regular fa-copy"></i></code>
+      </div>
+      <div class="payment-detail-item">
+        <span>IFSC Code:</span>
+        <code class="copyable" onclick="copyToClipboard('${escapeHtml(acc.ifsc_code)}', 'IFSC Code')">${escapeHtml(acc.ifsc_code)} <i class="fa-regular fa-copy"></i></code>
+      </div>
+      ${acc.branch_name ? `
+      <div class="payment-detail-item">
+        <span>Branch:</span>
+        <span>${escapeHtml(acc.branch_name)}</span>
+      </div>` : ''}
+      <div style="font-size: 11px; color: #64748b; margin-top: 6px; line-height: 1.4;">
+        ${acc.instructions ? escapeHtml(acc.instructions) : '* Transfer funds using your mobile banking / UPI app, then submit the 12-digit UTR or Reference Number below for Admin verification.'}
+      </div>
+    `;
+  });
+}
+
 function calculateBonusData(amount) {
   const amt = parseFloat(amount) || 0;
   if (amt < 5000) {
     return { percentage: 0, bonus: 0, total: amt };
   }
-  let pct = 3;
-  if (amt >= 50000) pct = 8;
-  else if (amt >= 25000) pct = 7;
-  else if (amt >= 20000) pct = 6;
-  else if (amt >= 15000) pct = 5;
-  else if (amt >= 10000) pct = 4;
-  else pct = 3;
 
-  const bonus = (amt * pct) / 100;
-  const total = amt + bonus;
+  let pct = 5;
+  const pkgs = window.liveRechargePackages && window.liveRechargePackages.length > 0
+    ? window.liveRechargePackages.filter(p => p.is_active !== false)
+    : [];
+
+  if (pkgs.length > 0) {
+    const sorted = [...pkgs].sort((a, b) => b.amount - a.amount);
+    const matched = sorted.find(p => amt >= p.amount);
+    if (matched) {
+      pct = matched.bonus_percentage;
+    } else {
+      pct = sorted[sorted.length - 1].bonus_percentage;
+    }
+  } else {
+    // High-incentive boosted default bonus tiers
+    if (amt >= 50000) pct = 16;
+    else if (amt >= 25000) pct = 13;
+    else if (amt >= 20000) pct = 11;
+    else if (amt >= 15000) pct = 9;
+    else if (amt >= 10000) pct = 7;
+    else pct = 5;
+  }
+
+  const bonus = parseFloat(((amt * pct) / 100).toFixed(2));
+  const total = parseFloat((amt + bonus).toFixed(2));
   return { percentage: pct, bonus, total };
 }
 
@@ -3081,5 +3252,329 @@ async function handleReviewRechargeSubmit(e) {
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerText = 'Confirm Action';
+  }
+}
+
+// ==========================================================================
+// Super Admin: Section Switcher & Package / Settlement Management
+// ==========================================================================
+
+function openSettlementAccountModal() {
+  if (window.location.pathname.includes('recharge') || (typeof currentPage !== 'undefined' && currentPage === 'recharge')) {
+    switchAdminRechargeSection('settlement');
+  } else {
+    window.location.href = 'recharge.html';
+  }
+}
+
+function openRechargePackagesModal() {
+  if (window.location.pathname.includes('recharge') || (typeof currentPage !== 'undefined' && currentPage === 'recharge')) {
+    switchAdminRechargeSection('packages');
+  } else {
+    window.location.href = 'recharge.html';
+  }
+}
+
+function switchAdminRechargeSection(secName, btnElem) {
+  const secRequests = document.getElementById('sec-recharge-requests');
+  const secPackages = document.getElementById('sec-recharge-packages');
+  const secSettlement = document.getElementById('sec-recharge-settlement');
+
+  if (secRequests) secRequests.style.display = secName === 'requests' ? 'block' : 'none';
+  if (secPackages) secPackages.style.display = secName === 'packages' ? 'block' : 'none';
+  if (secSettlement) secSettlement.style.display = secName === 'settlement' ? 'block' : 'none';
+
+  document.querySelectorAll('#adminRechargeSubNav .admin-section-nav-btn').forEach(b => {
+    b.classList.remove('active');
+  });
+
+  const activeBtn = btnElem || document.getElementById(`subnav-${secName}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  if (secName === 'packages') {
+    loadAdminRechargePackages();
+  } else if (secName === 'settlement') {
+    loadAdminSettlementAccount();
+  } else if (secName === 'requests') {
+    loadRechargeRequests();
+  }
+}
+
+// Load Admin Packages Table & Telemetry
+async function loadAdminRechargePackages() {
+  const tbody = document.getElementById('adminPackagesTableBody');
+  if (!tbody) return;
+
+  try {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 24px;">Fetching recharge packages...</td></tr>';
+    const res = await API.wallet.getPackages();
+    const pkgs = res.packages || [];
+    window.liveRechargePackages = pkgs;
+
+    // Update subnav counter
+    const subnavBadge = document.getElementById('subnavCountPackages');
+    if (subnavBadge) subnavBadge.innerText = pkgs.filter(p => p.is_active).length;
+
+    // Update telemetry metrics
+    const statCount = document.getElementById('pkgStatCount');
+    const statMax = document.getElementById('pkgStatMaxBonus');
+    const statMin = document.getElementById('pkgStatMinAmt');
+    const statAvg = document.getElementById('pkgStatAvgBonus');
+
+    if (pkgs.length > 0) {
+      const activeList = pkgs.filter(p => p.is_active);
+      const maxBonus = Math.max(...pkgs.map(p => p.bonus_percentage), 0);
+      const minAmt = Math.min(...pkgs.map(p => p.amount), 5000);
+      const avgBonus = (pkgs.reduce((sum, p) => sum + p.bonus_percentage, 0) / pkgs.length).toFixed(1);
+
+      if (statCount) statCount.innerText = activeList.length;
+      if (statMax) statMax.innerText = `${maxBonus}%`;
+      if (statMin) statMin.innerText = `₹${minAmt.toLocaleString('en-IN')}`;
+      if (statAvg) statAvg.innerText = `${avgBonus}%`;
+    }
+
+    if (pkgs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 28px; color: var(--text-muted);">No recharge packages found. Click "+ Add New Package Tier" to create one.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = pkgs.map(p => {
+      let badgeClass = 'cyan';
+      if (p.badge_style === 'highlight-gold') badgeClass = 'gold';
+      if (p.badge_style === 'highlight') badgeClass = 'cyan';
+      if (p.is_popular) badgeClass = 'green';
+
+      return `
+        <tr>
+          <td><span style="font-family: var(--font-mono); font-weight: 700; color: #64748b;">#${p.sort_order || 0}</span></td>
+          <td>
+            <div style="font-weight: 800; font-size: 15px; font-family: var(--font-mono); color: var(--text-heading);">
+              ₹${Number(p.amount).toLocaleString('en-IN')}
+            </div>
+            ${p.is_popular ? '<span style="font-size: 10px; color: #16a34a; font-weight: 700;">★ Popular Choice</span>' : ''}
+          </td>
+          <td>
+            <span style="font-weight: 800; font-size: 14px; color: #16a34a; font-family: var(--font-mono);">
+              ${p.bonus_percentage}%
+            </span>
+          </td>
+          <td>
+            <div style="font-weight: 700; color: #16a34a; font-family: var(--font-mono);">
+              +₹${Number(p.bonus_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </div>
+          </td>
+          <td>
+            <div style="font-weight: 800; color: var(--csc-blue-600); font-family: var(--font-mono);">
+              ₹${Number(p.total_credit).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </div>
+          </td>
+          <td>
+            ${p.tag ? `<span class="package-tag-pill ${badgeClass}">${escapeHtml(p.tag)}</span>` : '<span style="color:#94a3b8; font-size:12px;">—</span>'}
+          </td>
+          <td>
+            <span class="badge ${p.is_active ? 'badge-active' : 'badge-rejected'}">
+              <i class="fa-solid ${p.is_active ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+              ${p.is_active ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+          <td style="text-align: right;">
+            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+              <button class="btn-sm btn-receipt" onclick="openEditPackageModal(${p.id})" title="Edit Package Bonus">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </button>
+              <button class="btn-sm btn-reject" onclick="handleDeletePackage(${p.id}, ${p.amount})" title="Delete Package">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    renderDynamicRechargePresets();
+  } catch (err) {
+    console.error('Error loading admin packages:', err);
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #ef4444; padding: 20px;">Failed to load packages: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+// Open Modal: New Package
+function openNewPackageModal() {
+  const modal = document.getElementById('packageEditModal');
+  if (!modal) return;
+  document.getElementById('packageModalTitle').innerHTML = '<i class="fa-solid fa-gift" style="color:#16a34a; margin-right:6px;"></i> Add Recharge Package Tier';
+  document.getElementById('editPackageId').value = '';
+  document.getElementById('pkgAmountInput').value = '10000';
+  document.getElementById('pkgBonusPctInput').value = '7';
+  document.getElementById('pkgTagInput').value = '';
+  document.getElementById('pkgBadgeStyleSelect').value = 'default';
+  document.getElementById('pkgSortOrderInput').value = (window.liveRechargePackages.length + 1) || 1;
+  document.getElementById('pkgIsActiveCheckbox').checked = true;
+  document.getElementById('pkgIsPopularCheckbox').checked = false;
+  updatePackageModalPreview();
+  modal.classList.add('active');
+}
+
+// Open Modal: Edit Package
+function openEditPackageModal(id) {
+  const modal = document.getElementById('packageEditModal');
+  if (!modal) return;
+  const pkg = (window.liveRechargePackages || []).find(p => p.id === id);
+  if (!pkg) {
+    showToast('Package Not Found', 'Could not find package details.', 'error');
+    return;
+  }
+  document.getElementById('packageModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:var(--csc-blue-600); margin-right:6px;"></i> Edit Recharge Package Tier';
+  document.getElementById('editPackageId').value = pkg.id;
+  document.getElementById('pkgAmountInput').value = pkg.amount;
+  document.getElementById('pkgBonusPctInput').value = pkg.bonus_percentage;
+  document.getElementById('pkgTagInput').value = pkg.tag || '';
+  document.getElementById('pkgBadgeStyleSelect').value = pkg.badge_style || 'default';
+  document.getElementById('pkgSortOrderInput').value = pkg.sort_order || 1;
+  document.getElementById('pkgIsActiveCheckbox').checked = Boolean(pkg.is_active);
+  document.getElementById('pkgIsPopularCheckbox').checked = Boolean(pkg.is_popular);
+  updatePackageModalPreview();
+  modal.classList.add('active');
+}
+
+// Live Preview in Package Modal
+function updatePackageModalPreview() {
+  const amt = parseFloat(document.getElementById('pkgAmountInput')?.value) || 0;
+  const pct = parseFloat(document.getElementById('pkgBonusPctInput')?.value) || 0;
+  const bonus = (amt * pct) / 100;
+  const total = amt + bonus;
+
+  const bEl = document.getElementById('pkgModalPreviewBase');
+  const rEl = document.getElementById('pkgModalPreviewRate');
+  const bonEl = document.getElementById('pkgModalPreviewBonus');
+  const tEl = document.getElementById('pkgModalPreviewTotal');
+
+  if (bEl) bEl.innerText = `₹${amt.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  if (rEl) rEl.innerText = `${pct}%`;
+  if (bonEl) bonEl.innerText = `+₹${bonus.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  if (tEl) tEl.innerText = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+}
+
+// Save Package Form Submit
+async function handleSavePackageForm(e) {
+  e.preventDefault();
+  const id = document.getElementById('editPackageId').value;
+  const amount = parseFloat(document.getElementById('pkgAmountInput').value);
+  const bonus_percentage = parseFloat(document.getElementById('pkgBonusPctInput').value);
+  const tag = document.getElementById('pkgTagInput').value.trim();
+  const badge_style = document.getElementById('pkgBadgeStyleSelect').value;
+  const sort_order = parseInt(document.getElementById('pkgSortOrderInput').value, 10) || 0;
+  const is_active = document.getElementById('pkgIsActiveCheckbox').checked;
+  const is_popular = document.getElementById('pkgIsPopularCheckbox').checked;
+
+  if (isNaN(amount) || amount < 1000) {
+    showToast('Invalid Amount', 'Please enter a valid amount (minimum ₹1,000).', 'warning');
+    return;
+  }
+  if (isNaN(bonus_percentage) || bonus_percentage < 0) {
+    showToast('Invalid Bonus', 'Bonus percentage must be 0% or higher.', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('savePackageSubmitBtn');
+  btn.disabled = true;
+  btn.innerText = 'Saving Package...';
+
+  try {
+    const payload = { amount, bonus_percentage, tag, badge_style, sort_order, is_active, is_popular };
+    if (id) {
+      await API.wallet.updatePackage(id, payload);
+      showToast('Package Updated', `Recharge package for ₹${amount.toLocaleString('en-IN')} updated with ${bonus_percentage}% bonus!`, 'success');
+    } else {
+      await API.wallet.createPackage(payload);
+      showToast('Package Created', `New recharge tier for ₹${amount.toLocaleString('en-IN')} created with ${bonus_percentage}% bonus!`, 'success');
+    }
+    document.getElementById('packageEditModal')?.classList.remove('active');
+    await loadAdminRechargePackages();
+  } catch (err) {
+    showToast('Save Failed', err.message || 'Could not save recharge package.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 4px;"></i> Save Package';
+  }
+}
+
+// Delete Package
+async function handleDeletePackage(id, amount) {
+  if (!confirm(`Are you sure you want to delete the ₹${Number(amount).toLocaleString('en-IN')} recharge package?`)) {
+    return;
+  }
+  try {
+    await API.wallet.deletePackage(id);
+    showToast('Package Deleted', `Package for ₹${Number(amount).toLocaleString('en-IN')} removed.`, 'success');
+    await loadAdminRechargePackages();
+  } catch (err) {
+    showToast('Delete Failed', err.message, 'error');
+  }
+}
+
+// ==========================================================================
+// Super Admin: Settlement Account Settings Management
+// ==========================================================================
+
+async function loadAdminSettlementAccount() {
+  try {
+    const res = await API.wallet.getSettlementAccount();
+    const acc = res.settlement;
+    if (!acc) return;
+    window.liveSettlementAccount = acc;
+
+    const holderInput = document.getElementById('settleAccountHolder');
+    const upiInput = document.getElementById('settleUpiId');
+    const bankInput = document.getElementById('settleBankName');
+    const accInput = document.getElementById('settleAccountNumber');
+    const ifscInput = document.getElementById('settleIfscCode');
+    const branchInput = document.getElementById('settleBranchName');
+    const insInput = document.getElementById('settleInstructions');
+
+    if (holderInput) holderInput.value = acc.account_holder || '';
+    if (upiInput) upiInput.value = acc.upi_id || '';
+    if (bankInput) bankInput.value = acc.bank_name || '';
+    if (accInput) accInput.value = acc.account_number || '';
+    if (ifscInput) ifscInput.value = acc.ifsc_code || '';
+    if (branchInput) branchInput.value = acc.branch_name || '';
+    if (insInput) insInput.value = acc.instructions || '';
+
+    renderDynamicSettlementBox();
+  } catch (err) {
+    console.error('Error loading admin settlement account:', err);
+  }
+}
+
+async function handleSaveSettlementForm(e) {
+  e.preventDefault();
+  const account_holder = document.getElementById('settleAccountHolder').value.trim();
+  const upi_id = document.getElementById('settleUpiId').value.trim();
+  const bank_name = document.getElementById('settleBankName').value.trim();
+  const account_number = document.getElementById('settleAccountNumber').value.trim();
+  const ifsc_code = document.getElementById('settleIfscCode').value.trim().toUpperCase();
+  const branch_name = document.getElementById('settleBranchName').value.trim();
+  const instructions = document.getElementById('settleInstructions').value.trim();
+
+  if (!bank_name || !account_number || !ifsc_code || !upi_id) {
+    showToast('Required Fields', 'Bank Name, Account Number, IFSC Code, and UPI ID are required.', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('saveSettlementBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i> Updating Settlement Account...';
+
+  try {
+    const payload = { account_holder, upi_id, bank_name, account_number, ifsc_code, branch_name, instructions };
+    const res = await API.wallet.updateSettlementAccount(payload);
+    window.liveSettlementAccount = res.settlement;
+    showToast('Settlement Updated', 'CSC Central Settlement Account Details saved! All VLEs will now see these updated payment details.', 'success');
+    renderDynamicSettlementBox();
+  } catch (err) {
+    showToast('Update Failed', err.message || 'Could not update settlement details.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i> Save Settlement Account Details';
   }
 }

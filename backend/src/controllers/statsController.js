@@ -43,7 +43,8 @@ exports.getDashboardStats = async (req, res) => {
     } else {
       // 2. USER / VLE OPERATOR STATS (Strictly only their own metrics)
       const userId = req.user.id;
-      const [[{ current_balance }]] = await pool.query('SELECT wallet_balance FROM users WHERE id = ?', [userId]);
+      const [[userRow]] = await pool.query('SELECT wallet_balance FROM users WHERE id = ?', [userId]);
+      const current_balance = userRow ? userRow.wallet_balance : 0;
       const [[{ total_apps }]] = await pool.query('SELECT COUNT(*) AS total_apps FROM applications WHERE user_id = ?', [userId]);
       const [[{ pending_apps }]] = await pool.query("SELECT COUNT(*) AS pending_apps FROM applications WHERE user_id = ? AND status = 'Pending'", [userId]);
       const [[{ completed_apps }]] = await pool.query("SELECT COUNT(*) AS completed_apps FROM applications WHERE user_id = ? AND status IN ('Approved', 'Completed')", [userId]);
@@ -65,12 +66,12 @@ exports.getDashboardStats = async (req, res) => {
         success: true,
         role: 'user',
         stats: {
-          wallet_balance: parseFloat(current_balance),
+          wallet_balance: parseFloat(current_balance || 0) || 0,
           total_applications: parseInt(total_apps, 10),
           pending_applications: parseInt(pending_apps, 10),
           completed_applications: parseInt(completed_apps, 10),
-          total_commission_earned: parseFloat(total_commissions),
-          total_spent: parseFloat(total_spent)
+          total_commission_earned: parseFloat(total_commissions || 0) || 0,
+          total_spent: parseFloat(total_spent || 0) || 0
         },
         top_services: topServices
       });

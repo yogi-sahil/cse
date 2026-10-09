@@ -261,6 +261,44 @@ async function initDatabase() {
       ['CSC883109283', 'Anita Kumari', 'vle.bihar@digitalseva.gov.in', '9812345678', vle2Hash, 'Anita CSC Suvidha Kendra', 'Bihar', 'Patna']
     );
 
+    // 7. Seed Default Recharge Packages & Settlement Settings
+    const [existingPackages] = await db.query('SELECT COUNT(*) AS count FROM recharge_packages');
+    if (existingPackages[0].count === 0) {
+      const defaultPackages = [
+        [5000.00, 5.00, 'Starter Booster', 'default', 0, 1, 1],
+        [10000.00, 7.00, 'Popular Choice ⭐', 'highlight', 1, 1, 2],
+        [15000.00, 9.00, 'Growth Booster', 'default', 0, 1, 3],
+        [20000.00, 11.00, 'High Volume', 'default', 0, 1, 4],
+        [25000.00, 13.00, 'Mega Merchant 🌟', 'default', 0, 1, 5],
+        [50000.00, 16.00, 'CSC Enterprise VIP 🚀', 'highlight-gold', 0, 1, 6]
+      ];
+      for (const pkg of defaultPackages) {
+        await db.query(
+          'INSERT INTO recharge_packages (amount, bonus_percentage, tag, badge_style, is_popular, is_active, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          pkg
+        );
+      }
+      console.log(' Seeded default high-bonus recharge packages.');
+    }
+
+    const [existingSettings] = await db.query('SELECT COUNT(*) AS count FROM settlement_settings');
+    if (existingSettings[0].count === 0) {
+      await db.query(`
+        INSERT INTO settlement_settings (id, account_holder, bank_name, account_number, ifsc_code, branch_name, upi_id, instructions)
+        VALUES (
+          1,
+          'CSC e-Governance Services India Limited',
+          'State Bank of India (SBI)',
+          '392810482910',
+          'SBIN0001234',
+          'Parliament Street HQ, New Delhi',
+          'csc.spv.settle@sbi',
+          'Transfer funds using your mobile banking or UPI app, then submit the 12-digit UTR or Reference Number below for Admin verification and immediate wallet credit with bonus.'
+        )
+      `);
+      console.log(' Seeded default settlement account settings.');
+    }
+
     console.log(' Default Users Seeded:');
     console.log('   Super Admin: admin@digitalseva.gov.in / Admin@12345 (CSC-ADMIN-01)');
     console.log('   VLE Operator 1: vle.delhi@digitalseva.gov.in / Vle@12345 (CSC982144701)');

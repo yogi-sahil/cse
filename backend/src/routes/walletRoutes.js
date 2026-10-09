@@ -15,4 +15,14 @@ router.put('/recharge-requests/:id/status', authenticateToken, requireAdmin, wal
 // Direct Add money by Admin
 router.post('/add-money', authenticateToken, requireAdmin, walletController.addMoney);
 
+// Packages & Bonus Rates Management (Super Admin & VLE)
+router.get('/packages', authenticateToken, walletController.getPackages);
+router.post('/packages', authenticateToken, requireAdmin, walletController.createPackage);
+router.put('/packages/:id', authenticateToken, requireAdmin, walletController.updatePackage);
+router.delete('/packages/:id', authenticateToken, requireAdmin, walletController.deletePackage);
+
+// CSC Central Settlement Account Settings (Admin Can Update Details)
+router.get('/settlement-account', authenticateToken, walletController.getSettlementAccount);
+router.put('/settlement-account', authenticateToken, requireAdmin, walletController.updateSettlementAccount);
+
 module.exports = router;

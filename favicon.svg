@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="flagSaffron" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF9933"/>
+      <stop offset="100%" stop-color="#FF7700"/>
+    </linearGradient>
+    <linearGradient id="flagGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#138808"/>
+      <stop offset="100%" stop-color="#0E6406"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Shield / Rounded Hexagon -->
+  <rect x="2" y="2" width="44" height="44" rx="10" fill="#0A3D91"/>
+  <!-- Tricolor Arc Bands -->
+  <path d="M 8 16 Q 24 8 40 16" stroke="url(#flagSaffron)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M 8 24 Q 24 18 40 24" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 8 32 Q 24 28 40 32" stroke="url(#flagGreen)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Central CSC Digital Core -->
+  <circle cx="24" cy="24" r="5" fill="#FFFFFF"/>
+  <circle cx="24" cy="24" r="2.8" fill="#0A3D91"/>
+</svg>
