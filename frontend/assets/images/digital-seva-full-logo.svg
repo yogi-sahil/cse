@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 76" width="100%" height="100%">
+  <defs>
+    <linearGradient id="fullBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021B35"/>
+      <stop offset="100%" stop-color="#001428"/>
+    </linearGradient>
+    <linearGradient id="fullSaffron" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9933"/>
+      <stop offset="100%" stop-color="#FF6B00"/>
+    </linearGradient>
+    <linearGradient id="fullGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#12B852"/>
+      <stop offset="100%" stop-color="#065924"/>
+    </linearGradient>
+    <linearGradient id="fullGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD166"/>
+      <stop offset="100%" stop-color="#F77F00"/>
+    </linearGradient>
+    <filter id="fullGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Left Emblem Group (centered at x=38, y=38, radius=34) -->
+  <g transform="translate(0, 0)">
+    <circle cx="38" cy="38" r="35" fill="url(#fullBgGrad)" stroke="#1E4D7A" stroke-width="1.5"/>
+    <circle cx="38" cy="38" r="33" fill="none" stroke="url(#fullGold)" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="4 2"/>
+    <circle cx="38" cy="38" r="29" fill="none" stroke="#2563EB" stroke-width="0.8" stroke-opacity="0.3"/>
+
+    <!-- Saffron Swirl -->
+    <path d="M 38 9 
+             C 55 9 67 21 66 37 
+             C 65 31 58 17 44 17 
+             C 31 16 23 26 20 33 
+             C 22 23 29 9 38 9 Z" 
+          fill="url(#fullSaffron)" filter="url(#fullGlow)"/>
+
+    <!-- Green Swirl -->
+    <path d="M 38 67 
+             C 21 67 9 55 10 39 
+             C 11 45 18 59 32 59 
+             C 45 60 53 50 56 43 
+             C 54 53 47 67 38 67 Z" 
+          fill="url(#fullGreen)" filter="url(#fullGlow)"/>
+
+    <!-- Center White Disc -->
+    <circle cx="38" cy="38" r="18" fill="#FFFFFF"/>
+    <circle cx="38" cy="38" r="17" fill="#F8FAFC" stroke="#002B49" stroke-width="1"/>
+
+    <!-- Ashoka Chakra (Navy Blue) -->
+    <circle cx="38" cy="38" r="14" fill="none" stroke="#002B49" stroke-width="1.2"/>
+    <!-- Central hub -->
+    <circle cx="38" cy="38" r="4" fill="#002B49"/>
+    <circle cx="38" cy="38" r="2" fill="#FF9933"/>
+
+    <!-- Spokes -->
+    <g stroke="#002B49" stroke-width="0.9" stroke-linecap="round">
+      <line x1="38" y1="24.5" x2="38" y2="51.5"/>
+      <line x1="24.5" y1="38" x2="51.5" y2="38"/>
+      <line x1="28.5" y1="28.5" x2="47.5" y2="47.5"/>
+      <line x1="28.5" y1="47.5" x2="47.5" y2="28.5"/>
+      <line x1="38" y1="38" x2="50.7" y2="34.6"/>
+      <line x1="38" y1="38" x2="25.3" y2="41.4"/>
+      <line x1="38" y1="38" x2="49" y2="31.6"/>
+      <line x1="38" y1="38" x2="27" y2="44.4"/>
+      <line x1="38" y1="38" x2="44.4" y2="27"/>
+      <line x1="38" y1="38" x2="31.6" y2="49"/>
+      <line x1="38" y1="38" x2="34.6" y2="25.3"/>
+      <line x1="38" y1="38" x2="41.4" y2="50.7"/>
+      <line x1="38" y1="38" x2="34.6" y2="50.7"/>
+      <line x1="38" y1="38" x2="41.4" y2="25.3"/>
+      <line x1="38" y1="38" x2="31.6" y2="27"/>
+      <line x1="38" y1="38" x2="44.4" y2="49"/>
+    </g>
+  </g>
+
+  <!-- Typography Wordmark -->
+  <!-- CSC Badge Pill -->
+  <rect x="88" y="14" width="46" height="20" rx="4" fill="#002B49"/>
+  <text x="111" y="28" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="800" fill="#FF9933" text-anchor="middle" letter-spacing="1">CSC</text>
+
+  <!-- Main Title: Digital Seva Portal -->
+  <text x="142" y="30" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="800" fill="#0F172A" letter-spacing="-0.3">
+    Digital Seva <tspan fill="#FF7700">Portal</tspan>
+  </text>
+
+  <!-- Subtitle: e-Governance Services India -->
+  <text x="88" y="49" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600" fill="#475569" letter-spacing="0.3">
+    e-Governance Services India Limited
+  </text>
+  
+  <!-- Govt Tagline / Digital India line -->
+  <g transform="translate(88, 56)">
+    <circle cx="3" cy="5" r="2.5" fill="#12B852"/>
+    <text x="9" y="8" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="600" fill="#0D8A3C" letter-spacing="0.4">
+      DIGITAL INDIA INITIATIVE • MEITY
+    </text>
+  </g>
+</svg>

@@ -1,21 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="flagSaffron" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FF9933"/>
-      <stop offset="100%" stop-color="#FF7700"/>
+    <linearGradient id="favBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021B35"/>
+      <stop offset="100%" stop-color="#001428"/>
     </linearGradient>
-    <linearGradient id="flagGreen" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#138808"/>
-      <stop offset="100%" stop-color="#0E6406"/>
+    <linearGradient id="favSaffron" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9933"/>
+      <stop offset="100%" stop-color="#FF5500"/>
+    </linearGradient>
+    <linearGradient id="favGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#12B852"/>
+      <stop offset="100%" stop-color="#065924"/>
     </linearGradient>
   </defs>
-  <!-- Background Shield / Rounded Hexagon -->
-  <rect x="2" y="2" width="44" height="44" rx="10" fill="#0A3D91"/>
-  <!-- Tricolor Arc Bands -->
-  <path d="M 8 16 Q 24 8 40 16" stroke="url(#flagSaffron)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M 8 24 Q 24 18 40 24" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <path d="M 8 32 Q 24 28 40 32" stroke="url(#flagGreen)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- Central CSC Digital Core -->
-  <circle cx="24" cy="24" r="5" fill="#FFFFFF"/>
-  <circle cx="24" cy="24" r="2.8" fill="#0A3D91"/>
+
+  <!-- Base Rounded Hexagon/Shield -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#favBg)" stroke="#38BDF8" stroke-width="1.5" stroke-opacity="0.4"/>
+  
+  <!-- Outer Gold Ring -->
+  <circle cx="32" cy="32" r="26" fill="none" stroke="#F59E0B" stroke-width="1" stroke-dasharray="3 2" stroke-opacity="0.8"/>
+
+  <!-- Tricolor Dynamic Wings -->
+  <path d="M 32 8 C 46 8 56 18 55 31 C 54 26 48 15 36 15 C 26 14 19 22 17 28 C 18 20 24 8 32 8 Z" fill="url(#favSaffron)"/>
+  <path d="M 32 56 C 18 56 8 46 9 33 C 10 38 16 49 28 49 C 38 50 45 42 47 36 C 46 44 40 56 32 56 Z" fill="url(#favGreen)"/>
+
+  <!-- White Core Disc -->
+  <circle cx="32" cy="32" r="14" fill="#FFFFFF"/>
+  <circle cx="32" cy="32" r="13" fill="#F8FAFC" stroke="#002B49" stroke-width="1"/>
+
+  <!-- Ashoka Chakra Core -->
+  <circle cx="32" cy="32" r="10.5" fill="none" stroke="#002B49" stroke-width="1.2"/>
+  <circle cx="32" cy="32" r="3.2" fill="#002B49"/>
+  <circle cx="32" cy="32" r="1.5" fill="#FF9933"/>
+
+  <!-- Spokes -->
+  <g stroke="#002B49" stroke-width="0.9" stroke-linecap="round">
+    <line x1="32" y1="21.5" x2="32" y2="42.5"/>
+    <line x1="21.5" y1="32" x2="42.5" y2="32"/>
+    <line x1="24.5" y1="24.5" x2="39.5" y2="39.5"/>
+    <line x1="24.5" y1="39.5" x2="39.5" y2="24.5"/>
+  </g>
 </svg>

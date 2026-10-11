@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Seva Portal - Brand Identity & Logo Showcase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/portal.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    :root {
+      --navy-deep: #021B35;
+      --navy-card: #0A2540;
+      --saffron: #FF7700;
+      --saffron-light: #FF9933;
+      --green-india: #128807;
+      --green-light: #16A34A;
+      --gold-accent: #F59E0B;
+      --bg-dark: #071321;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: #1E293B;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .showcase-hero {
+      background: linear-gradient(135deg, #021B35 0%, #0A2F5C 50%, #04182E 100%);
+      color: #FFFFFF;
+      padding: 60px 24px 48px;
+      text-align: center;
+      position: relative;
+      border-bottom: 4px solid var(--saffron);
+    }
+
+    .showcase-hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin: 0 0 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .showcase-hero p {
+      font-size: 1.1rem;
+      color: #94A3B8;
+      max-width: 680px;
+      margin: 0 auto 24px;
+      line-height: 1.6;
+    }
+
+    .hero-badges {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #E2E8F0;
+      backdrop-filter: blur(8px);
+    }
+
+    .showcase-container {
+      max-width: 1200px;
+      margin: -32px auto 60px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 40px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      color: var(--saffron);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+    }
+
+    .logo-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .logo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.12);
+    }
+
+    .preview-box {
+      padding: 40px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+      position: relative;
+      background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+      transition: background 0.3s ease;
+    }
+
+    .preview-box.dark-bg {
+      background: radial-gradient(circle at center, #0B223D 0%, #031020 100%);
+    }
+
+    .preview-box img, .preview-box svg {
+      max-width: 200px;
+      max-height: 200px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.15));
+      border-radius: 16px;
+    }
+
+    .logo-info {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .logo-title-row h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 0;
+    }
+
+    .concept-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #EFF6FF;
+      color: #2563EB;
+    }
+
+    .logo-desc {
+      font-size: 0.92rem;
+      color: #64748B;
+      line-height: 1.55;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .btn-download {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #021B35;
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+
+    .btn-download:hover {
+      background: var(--saffron);
+      color: #FFFFFF;
+    }
+
+    .btn-secondary {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #E2E8F0;
+    }
+
+    /* Live Header Bar Simulation */
+    .header-simulation {
+      background: #FFFFFF;
+      border-radius: 16px;
+      border: 1px solid #E2E8F0;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+      margin-top: 30px;
+    }
+
+    .mock-header {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .mock-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Colors Section */
+    .color-swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .color-swatch {
+      background: #FFFFFF;
+      border-radius: 12px;
+      border: 1px solid #E2E8F0;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .color-swatch:hover {
+      transform: translateY(-3px);
+    }
+
+    .color-preview {
+      height: 70px;
+      width: 100%;
+    }
+
+    .color-details {
+      padding: 12px;
+      font-size: 0.85rem;
+    }
+
+    .color-name {
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 4px;
+    }
+
+    .color-hex {
+      font-family: monospace;
+      color: #64748B;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="utility-bar">
+    <div class="utility-container">
+      <div class="utility-left">
+        <span>Digital India Initiative | Ministry of Electronics & IT</span>
+      </div>
+      <div class="utility-right">
+        <a href="index.html" class="quick-link"><i class="fa-solid fa-arrow-left"></i> Back to Main Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Showcase Hero -->
+  <div class="showcase-hero">
+    <div class="hero-badges">
+      <span class="badge-pill"><i class="fa-solid fa-certificate" style="color:var(--saffron-light);"></i> Official Brand Assets</span>
+      <span class="badge-pill"><i class="fa-solid fa-vector-square" style="color:#38BDF8;"></i> Scalable Vectors (SVG)</span>
+      <span class="badge-pill"><i class="fa-solid fa-palette" style="color:#4ADE80;"></i> Indian National Tricolor Palette</span>
+    </div>
+    <h1>Digital Seva Portal - Brand Identity & Logos</h1>
+    <p>Complete official logo suite and branding identity designed specifically for the CSC e-Governance Digital Seva Platform, VLE Kendras, and government services delivery.</p>
+    <div style="display:flex; justify-content:center; gap:12px;">
+      <a href="index.html" class="btn btn-primary" style="padding:10px 24px;"><i class="fa-solid fa-house" style="margin-right:6px;"></i> Open Live Portal</a>
+      <a href="dashboard.html" class="btn btn-outline" style="padding:10px 24px; color:#fff; border-color:#fff;"><i class="fa-solid fa-gauge" style="margin-right:6px;"></i> View VLE Dashboard</a>
+    </div>
+  </div>
+
+  <div class="showcase-container">
+
+    <!-- Section 1: Logo Concepts -->
+    <h2 class="section-title"><i class="fa-solid fa-shapes"></i> Official Logo Options</h2>
+    
+    <div class="cards-grid">
+
+      <!-- Card 1: Vector Scalable SVG -->
+      <div class="logo-card">
+        <div class="preview-box">
+          <img src="assets/images/digital-seva-logo.svg" alt="Digital Seva Vector Emblem">
+        </div>
+        <div class="logo-info">
+          <div class="logo-title-row">
+            <h3>Vector Emblem (SVG)</h3>
+            <span class="concept-tag" style="background:#E0F2FE; color:#0284C7;">Active on Portal</span>
+          </div>
+          <p class="logo-desc">Handcrafted scalable vector mark featuring the 24-spoke Ashoka Chakra digital core, flowing tricolor ribbons (Saffron & Green), and satellite VLE network nodes. Ultra-crisp at any resolution.</p>
+          <div class="actions-row">
+            <a href="assets/images/digital-seva-logo.svg" download="digital-seva-logo.svg" class="btn-download">
+              <i class="fa-solid fa-download"></i> Download SVG
+            </a>
+            <a href="assets/images/digital-seva-logo.svg" target="_blank" class="btn-secondary">
+              <i class="fa-solid fa-eye"></i> View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: AI Generated High-Res Emblem -->
+      <div class="logo-card">
+        <div class="preview-box">
+          <img src="assets/images/digital-seva-emblem.jpg" alt="Digital Seva National Emblem Artwork">
+        </div>
+        <div class="logo-info">
+          <div class="logo-title-row">
+            <h3>Rashtriya Seva Emblem</h3>
+            <span class="concept-tag" style="background:#FEF3C7; color:#B45309;">High-Resolution Art</span>
+          </div>
+          <p class="logo-desc">High-prestige government crest with aerodynamic tricolor vortex ribbons, 24-spoke chakra wheel, digital nodes, and bold official typography. Ideal for banners, ID cards, and Kendra signage.</p>
+          <div class="actions-row">
+            <a href="assets/images/digital-seva-emblem.jpg" download="digital-seva-emblem.jpg" class="btn-download">
+              <i class="fa-solid fa-download"></i> Download JPG
+            </a>
+            <a href="assets/images/digital-seva-emblem.jpg" target="_blank" class="btn-secondary">
+              <i class="fa-solid fa-eye"></i> View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Cyber Shield & Biometrics -->
+      <div class="logo-card">
+        <div class="preview-box">
+          <img src="assets/images/digital-seva-tech-badge.jpg" alt="CSC Cyber Shield & Biometrics Badge">
+        </div>
+        <div class="logo-info">
+          <div class="logo-title-row">
+            <h3>Cyber Shield & Biometrics</h3>
+            <span class="concept-tag" style="background:#DCFCE7; color:#15803D;">Fintech & Security</span>
+          </div>
+          <p class="logo-desc">Hexagonal tech badge with biometric fingerprint core (symbolizing Aadhaar / UIDAI authentication & DigiPay Micro-ATM cash delivery) surrounded by gold circuit tracks and neon tricolor 'C'.</p>
+          <div class="actions-row">
+            <a href="assets/images/digital-seva-tech-badge.jpg" download="digital-seva-tech-badge.jpg" class="btn-download">
+              <i class="fa-solid fa-download"></i> Download JPG
+            </a>
+            <a href="assets/images/digital-seva-tech-badge.jpg" target="_blank" class="btn-secondary">
+              <i class="fa-solid fa-eye"></i> View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Modern Minimalist DS Monogram -->
+      <div class="logo-card">
+        <div class="preview-box">
+          <img src="assets/images/digital-seva-minimal-ds.jpg" alt="Digital Seva Minimalist DS Monogram">
+        </div>
+        <div class="logo-info">
+          <div class="logo-title-row">
+            <h3>Modern 'DS' Monogram</h3>
+            <span class="concept-tag" style="background:#F3E8FF; color:#7E22CE;">Minimalist Tech</span>
+          </div>
+          <p class="logo-desc">Dynamic modern monogram interlocking the letters 'D' and 'S' (Digital Seva) with tricolor flow and centralized connectivity hub. Ultra-clean contemporary tech aesthetic.</p>
+          <div class="actions-row">
+            <a href="assets/images/digital-seva-minimal-ds.jpg" download="digital-seva-minimal-ds.jpg" class="btn-download">
+              <i class="fa-solid fa-download"></i> Download JPG
+            </a>
+            <a href="assets/images/digital-seva-minimal-ds.jpg" target="_blank" class="btn-secondary">
+              <i class="fa-solid fa-eye"></i> View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Horizontal Lockup SVG -->
+      <div class="logo-card" style="grid-column: 1 / -1;">
+        <div class="preview-box" style="padding: 30px;">
+          <img src="assets/images/digital-seva-full-logo.svg" style="max-width: 480px; width: 100%;" alt="Digital Seva Horizontal Brand Lockup">
+        </div>
+        <div class="logo-info">
+          <div class="logo-title-row">
+            <h3>Full Horizontal Brand Lockup (SVG)</h3>
+            <span class="concept-tag" style="background:#E0E7FF; color:#4338CA;">Header Ready</span>
+          </div>
+          <p class="logo-desc">Vector horizontal lockup featuring the circular emblem, CSC badge pill, high-contrast bold wordmark, official entity subtitle, and Digital India initiative tag. Ideal for header bars, invoices, and receipts.</p>
+          <div class="actions-row">
+            <a href="assets/images/digital-seva-full-logo.svg" download="digital-seva-full-logo.svg" class="btn-download">
+              <i class="fa-solid fa-download"></i> Download Lockup SVG
+            </a>
+            <a href="assets/images/digital-seva-full-logo.svg" target="_blank" class="btn-secondary">
+              <i class="fa-solid fa-eye"></i> View
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 2: Live Header Integration Simulation -->
+    <h2 class="section-title"><i class="fa-solid fa-desktop"></i> Portal Header Preview</h2>
+    <div class="header-simulation">
+      <p style="font-size: 0.9rem; color: #64748B; margin-top: 0; margin-bottom: 16px;">
+        This is how the new logo renders inside your portal's official top navigation bar:
+      </p>
+
+      <div class="mock-header">
+        <div class="mock-header-brand">
+          <img src="assets/images/digital-seva-logo.svg" alt="Digital Seva Logo" style="height: 50px; width: 50px; filter: drop-shadow(0 2px 8px rgba(243, 112, 33, 0.35));">
+          <div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #002b49; letter-spacing: -0.3px; line-height: 1.2;">Digital Seva Portal</div>
+            <div style="font-size: 0.8rem; color: #64748b; font-weight: 500;">CSC e-Governance Services India Limited</div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:14px;">
+          <span style="background: #F1F5F9; border: 1px solid #E2E8F0; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; color: #334155;">Digital India</span>
+          <button style="background: #002b49; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer;">
+            <i class="fa-solid fa-right-to-bracket" style="margin-right: 6px;"></i> Login
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Official Brand Colors -->
+    <h2 class="section-title"><i class="fa-solid fa-palette"></i> Official Brand Color Palette</h2>
+    <div class="color-swatches">
+      <div class="color-swatch" onclick="navigator.clipboard.writeText('#021B35'); alert('Copied #021B35 to clipboard!')">
+        <div class="color-preview" style="background:#021B35;"></div>
+        <div class="color-details">
+          <div class="color-name">Ashoka Deep Navy</div>
+          <div class="color-hex">#021B35</div>
+        </div>
+      </div>
+
+      <div class="color-swatch" onclick="navigator.clipboard.writeText('#FF7700'); alert('Copied #FF7700 to clipboard!')">
+        <div class="color-preview" style="background:#FF7700;"></div>
+        <div class="color-details">
+          <div class="color-name">Rashtriya Saffron</div>
+          <div class="color-hex">#FF7700</div>
+        </div>
+      </div>
+
+      <div class="color-swatch" onclick="navigator.clipboard.writeText('#128807'); alert('Copied #128807 to clipboard!')">
+        <div class="color-preview" style="background:#128807;"></div>
+        <div class="color-details">
+          <div class="color-name">Bharat Emerald Green</div>
+          <div class="color-hex">#128807</div>
+        </div>
+      </div>
+
+      <div class="color-swatch" onclick="navigator.clipboard.writeText('#F59E0B'); alert('Copied #F59E0B to clipboard!')">
+        <div class="color-preview" style="background:#F59E0B;"></div>
+        <div class="color-details">
+          <div class="color-name">Sovereign Gold</div>
+          <div class="color-hex">#F59E0B</div>
+        </div>
+      </div>
+
+      <div class="color-swatch" onclick="navigator.clipboard.writeText('#FFFFFF'); alert('Copied #FFFFFF to clipboard!')">
+        <div class="color-preview" style="background:#FFFFFF; border-bottom: 1px solid #E2E8F0;"></div>
+        <div class="color-details">
+          <div class="color-name">Purity White</div>
+          <div class="color-hex">#FFFFFF</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="portal-footer" style="margin-top:60px;">
+    <div class="footer-container" style="text-align:center;">
+      <p style="margin:0; color:#94a3b8; font-size:0.9rem;">CSC e-Governance Services India Limited • Digital Seva Portal Branding Suite</p>
+    </div>
+  </footer>
+
+</body>
+</html>
